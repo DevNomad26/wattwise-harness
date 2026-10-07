@@ -1,0 +1,6 @@
+.venv/
+runs/*
+!runs/.gitkeep
+.env
+*.db
+eval/bills/real_*
