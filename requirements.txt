@@ -1,0 +1,22 @@
+# Model runtime (talks to the local Ollama server)
+ollama
+
+# Tools as MCP servers
+mcp
+
+# Schemas, validation and config
+pydantic
+python-dotenv
+
+# Harness helpers
+simpleeval      # safe math for the calculator tool
+json-repair     # fix broken JSON in model tool calls
+rapidfuzz       # match misspelled tool names
+
+# Images, UI, HTTP
+pillow          # clean up bill photos before sending to the model
+gradio          # web UI with trace panel
+httpx
+
+# Tests
+pytest
