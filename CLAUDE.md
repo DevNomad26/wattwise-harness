@@ -16,7 +16,7 @@ so never edit their folders unless asked.
 - Write a pytest test for every new function. Run `pytest` before committing.
 - Commit messages: `feat: ... (#issue)`, `fix:`, `test:`, `docs:`, `chore:`. Small commits.
 - Never commit to main. One branch per issue, e.g. feat/4-calculator-mcp.
-- Windows + Git Bash environment. Activate the venv with `source .venv/Scripts/activate`.
+- WSL (Ubuntu) environment. Activate the venv with `source .venv/bin/activate`.
 
 ## Folder ownership
 - A: wattwise/ (except verifier.py)
