@@ -16,3 +16,12 @@ class BillData(BaseModel):
     units: float = Field(..., description="Total units consumed (current_reading - previous_reading)")
     total_amount_due: Optional[float] = Field(None, description="The total amount due on the bill")
     due_date: Optional[str] = Field(None, description="The due date of the bill in YYYY-MM-DD format if available")
+
+class Check(BaseModel):
+    is_valid: bool = Field(..., description="Whether the check passed or failed")
+    reason: str = Field(..., description="The reason for the pass or failure")
+
+class TraceEvent(BaseModel):
+    timestamp: float = Field(..., description="Unix timestamp of the event")
+    event_type: str = Field(..., description="Type of event (e.g., 'llm_start', 'tool_call')")
+    content: Dict[str, Any] = Field(..., description="The content or payload of the event")
