@@ -4,3 +4,5 @@ runs/*
 .env
 *.db
 eval/bills/real_*
+__pycache__
+
