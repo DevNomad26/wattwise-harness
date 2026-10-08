@@ -49,18 +49,8 @@ def extract_bill_data(image_path: str) -> str:
         with urllib.request.urlopen(req, timeout=60) as response:
             result = json.loads(response.read().decode())
             return result.get("response", "{}")
-    except (URLError, HTTPError):
-        # Fallback for Hackathon testing if Ollama vision model is offline
-        mock_data = {
-            "state": "Maharashtra",
-            "months": 1.0,
-            "previous_reading": 1000.0,
-            "current_reading": 1150.0,
-            "units": 150.0,
-            "total_amount_due": 575.0,
-            "due_date": "2026-10-15"
-        }
-        return json.dumps(mock_data)
+    except Exception as e:
+        return f'{{"error": "Failed to call Vision model. Is Ollama running with {VISION_MODEL}? Details: {e}"}}'
 
 if __name__ == "__main__":
     mcp.run(transport='stdio')
