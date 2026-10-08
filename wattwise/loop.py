@@ -10,6 +10,7 @@ from mcp.client.stdio import stdio_client
 
 from wattwise.models import OllamaClient
 from wattwise.schemas import Step
+from wattwise.adapter import parse_step_json, match_tool_name
 
 class AgentLoop:
     def __init__(self, model_name: str = "qwen3.5:4b"):
@@ -79,7 +80,7 @@ class AgentLoop:
                 raw_content = response["content"]
                 
                 try:
-                    response_data = json.loads(raw_content)
+                    response_data = parse_step_json(raw_content)
                     step = Step(**response_data)
                 except Exception as e:
                     print(f"Failed to parse model output: {e}")
@@ -97,6 +98,9 @@ class AgentLoop:
                     return step.final_answer
                     
                 elif step.action == "tool":
+                    if step.tool_name:
+                        step.tool_name = match_tool_name(step.tool_name, list(available_tools.keys()))
+                        
                     if not step.tool_name or step.tool_name not in available_tools:
                         error_msg = f"Tool '{step.tool_name}' not found."
                         print(error_msg)
