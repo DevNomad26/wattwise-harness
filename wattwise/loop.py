@@ -73,15 +73,15 @@ class AgentLoop:
                 except Exception as e:
                     print(f"Failed to connect to MCP server {script}: {e}")
             
+            # We inject available tools into the system prompt conceptually exactly ONCE
+            tools_list = [v["schema"] for v in available_tools.values()]
+            if tools_list:
+                tools_str = json.dumps(tools_list, indent=2)
+                messages[0]["content"] += f"\n\nAvailable tools:\n{tools_str}"
+                
             # 2. Main agent loop (max 8 steps)
             for step_idx in range(1, 9):
                 print(f"Step {step_idx}/8")
-                
-                # We inject available tools into the system prompt conceptually
-                tools_list = [v["schema"] for v in available_tools.values()]
-                if tools_list:
-                    tools_str = json.dumps(tools_list, indent=2)
-                    messages[0]["content"] += f"\n\nAvailable tools:\n{tools_str}"
                 
                 # Get model response
                 response = await self.model.generate(messages)

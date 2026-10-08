@@ -9,7 +9,9 @@
       {"upto": 500, "rate": 15.72},
       {"upto": null, "rate": 17.81}
     ],
-    "duty_percent": 0.16
+    "duty_percent": 0.16,
+    "effective_date": "2024-04-01",
+    "source_link": "https://www.mahadiscom.in/consumer/wp-content/uploads/2024/03/MERC_Tariff_Order_2024_25.pdf"
   },
   "Gujarat": {
     "discom": "PGVCL (Gujarat)",
@@ -21,7 +23,9 @@
       {"upto": 250, "rate": 4.15},
       {"upto": null, "rate": 5.20}
     ],
-    "duty_percent": 0.15
+    "duty_percent": 0.15,
+    "effective_date": "2024-04-01",
+    "source_link": "https://www.pgvcl.com/consumer/tariff-schedule/Tariff-Schedule-2024-25.pdf"
   },
   "Rajasthan": {
     "discom": "JVVNL (Rajasthan)",
@@ -34,6 +38,8 @@
       {"upto": 500, "rate": 7.65},
       {"upto": null, "rate": 7.95}
     ],
-    "duty_percent": 0.05
+    "duty_percent": 0.05,
+    "effective_date": "2024-04-01",
+    "source_link": "https://energy.rajasthan.gov.in/content/dam/raj/energy/jvvnl/pdf/Tariff/Tariff-for-Supply-of-Electricity-2024.pdf"
   }
 }
