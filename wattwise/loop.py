@@ -65,7 +65,7 @@ class AgentLoop:
                             "schema": {
                                 "name": tool.name,
                                 "description": tool.description,
-                                "input_schema": tool.inputSchema
+                                "input_schema": getattr(tool, 'inputSchema', getattr(tool, 'input_schema', {}))
                             }
                         }
                     print(f"Connected to MCP server: {script}")
