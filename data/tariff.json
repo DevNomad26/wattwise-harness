@@ -1,0 +1,15 @@
+{
+  "discom": "MSEDCL (Maharashtra State Electricity Distribution)",
+  "category": "domestic",
+  "effective_from": "2024-04-01",
+  "source_url": "https://www.mahadiscom.in/consumer/wp-content/uploads/2024/03/Tariff-Order-2024-25.pdf",
+  "fixed_charge_per_month": 128.0,
+  "slabs": [
+    {"upto": 100, "rate": 5.58},
+    {"upto": 300, "rate": 11.46},
+    {"upto": 500, "rate": 15.72},
+    {"upto": null, "rate": 17.81}
+  ],
+  "duty_percent": 0.16,
+  "fuel_surcharge_per_unit": 0.0
+}
