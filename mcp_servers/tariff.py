@@ -11,25 +11,36 @@ def load_tariff():
         return json.load(f)
 
 @mcp.tool()
-def get_tariff_info() -> str:
-    """Returns the official electricity tariff slabs and fixed charges."""
-    data = load_tariff()
-    info = f"Electricity Tariff Information for {data['discom']} (Effective: {data['effective_from']}):\n"
+def get_tariff_info(state: str) -> str:
+    """Returns the official electricity tariff slabs and fixed charges for the requested state."""
+    full_data = load_tariff()
+    
+    # Simple matching logic just in case AI capitalizes wrongly
+    matched_state = next((k for k in full_data.keys() if k.lower() in state.lower()), None)
+    if not matched_state:
+        return f"Error: Tariff data for state '{state}' is not available."
+        
+    data = full_data[matched_state]
+    info = f"Electricity Tariff Information for {data['discom']}:\n"
     info += f"- Fixed Charge: Rs {data['fixed_charge_per_month']}\n"
     for slab in data['slabs']:
         upto = slab['upto'] if slab['upto'] else "Above"
         info += f"- Up to {upto} units: Rs {slab['rate']} per unit\n"
     info += f"- Electricity Duty: {data['duty_percent']*100}%\n"
-    info += f"Source: {data['source_url']}\n"
     return info
 
 @mcp.tool()
-def compute_bill(units: float) -> str:
-    """Calculates the total electricity bill based on official tariff data."""
+def compute_bill(units: float, state: str) -> str:
+    """Calculates the total electricity bill based on official tariff data for a specific state."""
     if units < 0:
         return "Error: Units cannot be negative."
         
-    data = load_tariff()
+    full_data = load_tariff()
+    matched_state = next((k for k in full_data.keys() if k.lower() in state.lower()), None)
+    if not matched_state:
+        return f"Error: Tariff data for state '{state}' is not available."
+        
+    data = full_data[matched_state]
     total_cost = data['fixed_charge_per_month']
     remaining_units = units
     energy_charge = 0.0
@@ -50,11 +61,11 @@ def compute_bill(units: float) -> str:
         prev_limit = limit
         
     total_cost += energy_charge
-    # Add duty (16% of energy charge usually)
+    # Add duty
     duty = energy_charge * data.get('duty_percent', 0.16)
     total_cost += duty
     
-    return f"Total bill for {units} units is Rs {total_cost:.2f} (Includes Rs {data['fixed_charge_per_month']} fixed, Rs {energy_charge:.2f} energy, Rs {duty:.2f} duty)."
+    return f"Total bill for {units} units in {matched_state} is Rs {total_cost:.2f} (Includes Rs {data['fixed_charge_per_month']} fixed, Rs {energy_charge:.2f} energy, Rs {duty:.2f} duty)."
 
 if __name__ == "__main__":
     mcp.run(transport='stdio')

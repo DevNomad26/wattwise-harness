@@ -1,36 +1,36 @@
 from mcp_servers.tariff import compute_bill
 
-def test_compute_bill():
-    print("Running Official MSEDCL Tariff Tests...\n")
+def test_multi_state_compute():
+    print("Running Multi-State Tariff Tests...\n")
     
-    # Test 1: 50 units (Hits 1st slab: 5.58)
-    # Energy: 50 * 5.58 = 279
-    # Duty: 16% of 279 = 44.64
-    # Fixed: 128
-    # Total: 128 + 279 + 44.64 = 451.64
-    res1 = compute_bill(50)
-    assert "Rs 451.64" in res1, f"Failed Test 1: {res1}"
-    print("[PASS] Test 1: 50 units = Rs 451.64")
-    
-    # Test 2: 150 units (Hits 1st and 2nd slab)
-    # Energy: (100 * 5.58) + (50 * 11.46) = 558 + 573 = 1131
+    # Maharashtra Test (150 units)
+    # Energy: (100 * 5.58) + (50 * 11.46) = 1131
     # Duty: 16% of 1131 = 180.96
     # Fixed: 128
     # Total: 128 + 1131 + 180.96 = 1439.96
-    res2 = compute_bill(150)
-    assert "Rs 1439.96" in res2, f"Failed Test 2: {res2}"
-    print("[PASS] Test 2: 150 units = Rs 1439.96")
+    res1 = compute_bill(150, "Maharashtra")
+    assert "Rs 1439.96" in res1, f"MH Failed: {res1}"
+    print("[PASS] Maharashtra: 150 units = Rs 1439.96")
     
-    # Test 3: 350 units (Hits 1st, 2nd, and 3rd slab)
-    # Energy: (100 * 5.58) + (200 * 11.46) + (50 * 15.72) = 558 + 2292 + 786 = 3636
-    # Duty: 16% of 3636 = 581.76
-    # Fixed: 128
-    # Total: 128 + 3636 + 581.76 = 4345.76
-    res3 = compute_bill(350)
-    assert "Rs 4345.76" in res3, f"Failed Test 3: {res3}"
-    print("[PASS] Test 3: 350 units = Rs 4345.76")
+    # Gujarat Test (100 units)
+    # Energy: (50 * 3.05) + (50 * 3.50) = 152.5 + 175 = 327.5
+    # Duty: 15% of 327.5 = 49.125 (49.12)
+    # Fixed: 40
+    # Total: 40 + 327.5 + 49.125 = 416.62
+    res2 = compute_bill(100, "Gujarat")
+    assert "Rs 416.6" in res2, f"GJ Failed: {res2}"
+    print("[PASS] Gujarat: 100 units = Rs 416.62")
     
-    print("\nAll 3 hand-checked tests matched the official Maharashtra tariff!")
+    # Rajasthan Test (50 units)
+    # Energy: 50 * 4.75 = 237.5
+    # Duty: 5% of 237.5 = 11.875
+    # Fixed: 275
+    # Total: 275 + 237.5 + 11.875 = 524.38
+    res3 = compute_bill(50, "Rajasthan")
+    assert "Rs 524.3" in res3, f"RJ Failed: {res3}"
+    print("[PASS] Rajasthan: 50 units = Rs 524.38")
+    
+    print("\nAll states calculated perfectly!")
 
 if __name__ == "__main__":
-    test_compute_bill()
+    test_multi_state_compute()

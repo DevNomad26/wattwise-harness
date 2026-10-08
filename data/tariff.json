@@ -1,15 +1,39 @@
 {
-  "discom": "MSEDCL (Maharashtra State Electricity Distribution)",
-  "category": "domestic",
-  "effective_from": "2024-04-01",
-  "source_url": "https://www.mahadiscom.in/consumer/wp-content/uploads/2024/03/Tariff-Order-2024-25.pdf",
-  "fixed_charge_per_month": 128.0,
-  "slabs": [
-    {"upto": 100, "rate": 5.58},
-    {"upto": 300, "rate": 11.46},
-    {"upto": 500, "rate": 15.72},
-    {"upto": null, "rate": 17.81}
-  ],
-  "duty_percent": 0.16,
-  "fuel_surcharge_per_unit": 0.0
+  "Maharashtra": {
+    "discom": "MSEDCL (Maharashtra)",
+    "category": "domestic",
+    "fixed_charge_per_month": 128.0,
+    "slabs": [
+      {"upto": 100, "rate": 5.58},
+      {"upto": 300, "rate": 11.46},
+      {"upto": 500, "rate": 15.72},
+      {"upto": null, "rate": 17.81}
+    ],
+    "duty_percent": 0.16
+  },
+  "Gujarat": {
+    "discom": "PGVCL (Gujarat)",
+    "category": "domestic",
+    "fixed_charge_per_month": 40.0,
+    "slabs": [
+      {"upto": 50, "rate": 3.05},
+      {"upto": 100, "rate": 3.50},
+      {"upto": 250, "rate": 4.15},
+      {"upto": null, "rate": 5.20}
+    ],
+    "duty_percent": 0.15
+  },
+  "Rajasthan": {
+    "discom": "JVVNL (Rajasthan)",
+    "category": "domestic",
+    "fixed_charge_per_month": 275.0,
+    "slabs": [
+      {"upto": 50, "rate": 4.75},
+      {"upto": 150, "rate": 6.50},
+      {"upto": 300, "rate": 7.35},
+      {"upto": 500, "rate": 7.65},
+      {"upto": null, "rate": 7.95}
+    ],
+    "duty_percent": 0.05
+  }
 }
