@@ -1,4 +1,3 @@
-cat > CLAUDE.md << 'EOF'
 # WattWise: electricity bill checker harness
 
 A harness that makes small open models (Gemma 4, Qwen3.5 via Ollama) reliably
@@ -22,4 +21,3 @@ so never edit their folders unless asked.
 - A: wattwise/ (except verifier.py)
 - B (Akash): mcp_servers/, data/, skills/
 - C: wattwise/verifier.py, eval/, app.py, notebooks/, README.md
-EOF
