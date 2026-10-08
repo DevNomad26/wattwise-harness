@@ -11,6 +11,7 @@ from mcp.client.stdio import stdio_client
 from wattwise.models import OllamaClient
 from wattwise.schemas import Step
 from wattwise.adapter import parse_step_json, match_tool_name
+from wattwise.skills_loader import get_all_skills, load_skill
 
 class AgentLoop:
     def __init__(self, model_name: str = "qwen3.5:4b"):
@@ -35,6 +36,13 @@ class AgentLoop:
         async with AsyncExitStack() as stack:
             available_tools = {}
             active_sessions = {}
+            
+            # 0. Inject available skills into the system prompt
+            skills = get_all_skills()
+            if skills:
+                skills_str = "\n".join([f"- {s['name']}: {s['description']}" for s in skills])
+                messages[0]["content"] += f"\n\nYou have access to these internal skills:\n{skills_str}\n"
+                messages[0]["content"] += "Use the tool 'load_skill' with args {'name': 'skill-name'} to read the full instructions for a skill.\n"
             
             # 1. Connect to all MCP servers
             for script in mcp_scripts:
@@ -79,6 +87,13 @@ class AgentLoop:
                 response = await self.model.generate(messages)
                 raw_content = response["content"]
                 
+                # Check for Thinking Controller Failsafe interception
+                if raw_content.startswith("<CUTOFF>"):
+                    print(f"Intercepted stuck reasoning: {raw_content}")
+                    messages.append({"role": "assistant", "content": '{"action": "tool", "tool_name": "think_failsafe", "tool_args": {}}'})
+                    messages.append({"role": "user", "content": "You are repeating yourself or taking too long. Please answer now without thinking."})
+                    continue
+                
                 try:
                     response_data = parse_step_json(raw_content)
                     step = Step(**response_data)
@@ -98,6 +113,18 @@ class AgentLoop:
                     return step.final_answer
                     
                 elif step.action == "tool":
+                    # Internal Tool: load_skill
+                    if step.tool_name == "load_skill":
+                        skill_name = step.tool_args.get("name") if step.tool_args else None
+                        print(f"Calling internal tool load_skill with name '{skill_name}'")
+                        if not skill_name:
+                            messages.append({"role": "user", "content": "Missing 'name' argument for load_skill."})
+                            continue
+                        skill_content = load_skill(skill_name)
+                        messages.append({"role": "user", "content": f"Loaded Skill '{skill_name}':\n{skill_content}"})
+                        continue
+
+                    # External MCP Tools
                     if step.tool_name:
                         step.tool_name = match_tool_name(step.tool_name, list(available_tools.keys()))
                         
