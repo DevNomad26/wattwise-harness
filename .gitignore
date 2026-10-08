@@ -4,3 +4,9 @@ runs/*
 .env
 *.db
 eval/bills/real_*
+
+CLAUDE.md
+__pycache__/
+*.pyc
+.pytest_cache/
+.claude/
