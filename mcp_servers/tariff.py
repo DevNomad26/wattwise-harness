@@ -2,7 +2,7 @@ import os
 import json
 from mcp.server.mcpserver import MCPServer
 
-mcp = MCPServer("Tariff Server")
+mcp = MCPServer("Tariff Server", log_level="WARNING")
 
 TARIFF_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "tariff.json")
 
