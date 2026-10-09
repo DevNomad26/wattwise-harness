@@ -6,7 +6,7 @@ description: Explain an electricity bill or a change in the bill in simple words
 
 1. If you do not already have the bill numbers, first follow the `bill-checker` steps 1 to 3.
 2. Call `get_tariff_info` with the state to get the slab rates:
-   `{"action": "tool", "tool_name": "get_tariff_info", "tool_args": {"state": "Rajasthan"}}`
+   `{"action": "tool", "tool_name": "get_tariff_info", "tool_args": {"state": "<state from the bill>"}}`
 3. Explain the bill in three parts:
    - Fixed charge: a monthly amount you pay even if you use no electricity.
    - Energy charge: units are billed in slabs. The first units are cheap; each later block costs more per unit. Say which slabs this bill reached.
