@@ -15,7 +15,8 @@ class OllamaClient:
             "model": self.model_name,
             "messages": messages,
             "stream": True,
-            "format": "json"
+            "format": "json",
+            "think": False
         }
         
         start_time = time.time()
