@@ -13,25 +13,40 @@ from wattwise.schemas import Step
 from wattwise.adapter import parse_step_json, match_tool_name
 from wattwise.skills_loader import get_all_skills, load_skill
 
+MISSING_TOOL_NAMES = {"", "null", "none"}
+
+def skill_for_tool(tool_name: str | None, tool_names: List[str], skill_names: List[str]) -> str | None:
+    """Small models often call a skill by name as if it were a tool. Return that skill's name."""
+    if not tool_name or tool_name in tool_names or tool_name == "load_skill":
+        return None
+    matched = match_tool_name(tool_name, skill_names)
+    return matched if matched in skill_names else None
+
 class AgentLoop:
     def __init__(self, model_name: str = "qwen3.5:4b"):
         # Localhost by default
         ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
         self.model = OllamaClient(model_name=model_name, host=ollama_host)
         
-    async def run(self, user_prompt: str, mcp_scripts: List[str]) -> str:
+    async def run(self, user_prompt: str, mcp_scripts: List[str], history: List[Dict[str, str]] | None = None) -> str:
+        """Run one question. `history` holds earlier non-system messages so follow-up
+        questions can reuse earlier tool results; after the run, self.messages holds the
+        full transcript."""
         run_id = str(uuid.uuid4())
         print(f"\nStarting run {run_id}")
-        
+
         messages = [
             {
-                "role": "system", 
+                "role": "system",
                 "content": "You are a smart energy assistant. Always reply with strict JSON matching the Step schema. "
                            "If you need to use a tool, set action='tool', provide tool_name and tool_args. "
-                           "If you have the final answer, set action='final' and provide final_answer."
+                           "If you have the final answer, set action='final' and provide final_answer. "
+                           "Earlier messages in this conversation and their tool results are still valid; reuse them instead of calling the same tools again."
             },
+            *(history or []),
             {"role": "user", "content": user_prompt}
         ]
+        self.messages = messages
         
         async with AsyncExitStack() as stack:
             available_tools = {}
@@ -113,6 +128,15 @@ class AgentLoop:
                     return step.final_answer
                     
                 elif step.action == "tool":
+                    if str(step.tool_name or "").strip().lower() in MISSING_TOOL_NAMES:
+                        print("Model sent a tool call without a tool name.")
+                        messages.append({"role": "user", "content": "No tool_name given. If you have the answer, reply with action='final' and put it in final_answer."})
+                        continue
+
+                    skill = skill_for_tool(step.tool_name, list(available_tools.keys()), [s["name"] for s in skills])
+                    if skill:
+                        step.tool_name, step.tool_args = "load_skill", {"name": skill}
+
                     # Internal Tool: load_skill
                     if step.tool_name == "load_skill":
                         skill_name = step.tool_args.get("name") if step.tool_args else None

@@ -32,7 +32,7 @@ class ThinkingController:
         token_count = 0
         
         # Async stream the response
-        async with client.stream("POST", url, json=payload, timeout=60.0) as response:
+        async with client.stream("POST", url, json=payload, timeout=300.0) as response:
             response.raise_for_status()
             
             async for line in response.aiter_lines():

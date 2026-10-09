@@ -94,7 +94,7 @@ def evaluate(expression: str) -> float:
     return result
 
 
-mcp = MCPServer("calculator")
+mcp = MCPServer("calculator", log_level="WARNING")
 
 
 @mcp.tool()
