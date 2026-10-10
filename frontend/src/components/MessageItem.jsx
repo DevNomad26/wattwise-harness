@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Bot, User, Copy, Check, Clock, AlertTriangle } from 'lucide-react';
-import { TraceViewer } from './TraceViewer';
 
 export function MessageItem({ message, onImageZoom }) {
   const [copied, setCopied] = useState(false);
@@ -17,12 +16,12 @@ export function MessageItem({ message, onImageZoom }) {
   return (
     <div className={`message-bubble-wrapper ${isUser ? 'user' : 'assistant'}`}>
       <div className={`avatar ${isUser ? 'user' : 'assistant'}`}>
-        {isUser ? <User size={18} /> : <Bot size={18} />}
+        {isUser ? <User size={15} /> : <Bot size={15} />}
       </div>
 
       <div className="message-content">
         <div className={`message-bubble ${isUser ? 'user' : 'assistant'}`}>
-          {/* If user attached an image to this message */}
+          {/* Attached image thumbnail */}
           {message.imagePreview && (
             <div
               className="msg-image-thumb"
@@ -30,7 +29,7 @@ export function MessageItem({ message, onImageZoom }) {
               style={{ cursor: 'pointer' }}
               title="Click to view original photo"
             >
-              <img src={message.imagePreview} alt="Attached bill" />
+              <img src={message.imagePreview} alt="Attached electricity bill" />
             </div>
           )}
 
@@ -47,10 +46,11 @@ export function MessageItem({ message, onImageZoom }) {
                     color: 'var(--rose-primary)',
                     marginBottom: '0.5rem',
                     fontWeight: 600,
+                    fontSize: '0.85rem',
                   }}
                 >
-                  <AlertTriangle size={16} />
-                  <span>Agent Notice</span>
+                  <AlertTriangle size={15} />
+                  <span>Notice</span>
                 </div>
               )}
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -60,32 +60,27 @@ export function MessageItem({ message, onImageZoom }) {
           )}
         </div>
 
-        {/* Embedded Trace Viewer for Assistant Messages */}
-        {!isUser && message.trace && message.trace.length > 0 && (
-          <TraceViewer trace={message.trace} />
-        )}
-
-        {/* Message Footer: Execution time & Copy Button */}
+        {/* Minimal Footer: Execution time & Copy Action */}
         {!isUser && (
           <div className="message-footer">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <div>
               {message.seconds !== undefined && (
-                <>
-                  <Clock size={12} />
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <Clock size={11} />
                   <span>{message.seconds}s</span>
-                </>
+                </span>
               )}
             </div>
 
             <button className="copy-btn" onClick={handleCopy} title="Copy response">
               {copied ? (
                 <>
-                  <Check size={13} style={{ color: 'var(--emerald-primary)' }} />
+                  <Check size={12} style={{ color: 'var(--emerald-primary)' }} />
                   <span style={{ color: 'var(--emerald-primary)' }}>Copied</span>
                 </>
               ) : (
                 <>
-                  <Copy size={13} />
+                  <Copy size={12} />
                   <span>Copy</span>
                 </>
               )}

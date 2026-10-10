@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Zap, Sparkles } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { MessageItem } from './MessageItem';
 
 export function ChatList({ messages, isProcessing, onImageZoom }) {
@@ -13,16 +13,14 @@ export function ChatList({ messages, isProcessing, onImageZoom }) {
     return (
       <div className="messages-scroll-area">
         <div className="welcome-screen">
-          <div className="welcome-badge">
-            <Sparkles size={16} />
-            <span>AI Electricity Bill Auditor</span>
+          <div className="welcome-icon-box">
+            <Zap size={20} />
           </div>
 
-          <h1 className="welcome-title">Audit, Verify & Optimize Energy Bills</h1>
+          <h1 className="welcome-title">Electricity Bill Auditor</h1>
 
           <p className="welcome-desc">
-            Upload your electricity bill photo on the left or select a quick action below.
-            WattWise will read meter readings, verify state tariff slabs, flag arithmetic discrepancies, and calculate rooftop solar ROI.
+            Upload an electricity bill photo or type a question. WattWise will analyze meter readings, verify tariff slabs, detect arithmetic errors, and calculate solar ROI.
           </p>
         </div>
       </div>
@@ -38,7 +36,7 @@ export function ChatList({ messages, isProcessing, onImageZoom }) {
       {isProcessing && (
         <div className="message-bubble-wrapper assistant">
           <div className="avatar assistant">
-            <Zap size={18} />
+            <Zap size={14} />
           </div>
           <div className="message-content">
             <div className="message-bubble assistant">
@@ -46,8 +44,8 @@ export function ChatList({ messages, isProcessing, onImageZoom }) {
                 <div className="typing-dot" />
                 <div className="typing-dot" />
                 <div className="typing-dot" />
-                <span style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginLeft: '0.4rem' }}>
-                  Auditing bill & consulting tariff slabs...
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '0.35rem' }}>
+                  Auditing bill & verifying tariff...
                 </span>
               </div>
             </div>

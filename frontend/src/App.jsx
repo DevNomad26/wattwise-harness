@@ -9,6 +9,10 @@ import { checkHealth, sendChatMessage, deleteSession } from './services/api';
 
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('wattwise_theme') || 'dark');
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    const saved = localStorage.getItem('wattwise_sidebar');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
   const [health, setHealth] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -25,6 +29,14 @@ export default function App() {
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => {
+      const next = !prev;
+      localStorage.setItem('wattwise_sidebar', JSON.stringify(next));
+      return next;
+    });
   };
 
   // Check Backend Health
@@ -47,6 +59,9 @@ export default function App() {
     }
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
+    if (!sidebarOpen) {
+      setSidebarOpen(true);
+    }
   };
 
   const handleFileRemove = () => {
@@ -98,12 +113,11 @@ export default function App() {
         setSessionId(response.session_id);
       }
 
-      // Add Assistant Message
+      // Add Assistant Message (pure text without backend execution logs attached)
       const newAssistantMsg = {
         id: `assistant-${Date.now()}`,
         role: 'assistant',
         content: response.answer,
-        trace: response.trace || [],
         seconds: response.seconds,
         error: response.error,
         timestamp: new Date(),
@@ -134,6 +148,8 @@ export default function App() {
         onToggleTheme={toggleTheme}
         onNewSession={handleNewSession}
         isProcessing={isProcessing}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={toggleSidebar}
       />
 
       {/* Main Workspace */}
@@ -146,9 +162,11 @@ export default function App() {
           onFileRemove={handleFileRemove}
           onImageZoom={(url) => setZoomedImage(url)}
           disabled={isProcessing}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
         />
 
-        {/* Right Area: Chat & Reasoning Stream */}
+        {/* Right Area: Chat Stream */}
         <main className="chat-container">
           <ChatList
             messages={messages}
@@ -172,7 +190,7 @@ export default function App() {
         </main>
       </div>
 
-      {/* Bill Image Enlargement Modal */}
+      {/* Bill Image Zoom Modal */}
       {zoomedImage && (
         <ImageModal imageUrl={zoomedImage} onClose={() => setZoomedImage(null)} />
       )}

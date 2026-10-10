@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { UploadCloud, Image as ImageIcon, Trash2, Maximize2, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { UploadCloud, Trash2, Maximize2, ShieldCheck, CheckCircle2, ChevronLeft } from 'lucide-react';
 
 export function BillUploader({
   selectedFile,
@@ -7,7 +7,9 @@ export function BillUploader({
   onFileSelect,
   onFileRemove,
   onImageZoom,
-  disabled
+  disabled,
+  isOpen,
+  onClose,
 }) {
   const fileInputRef = useRef(null);
 
@@ -41,18 +43,28 @@ export function BillUploader({
   };
 
   return (
-    <aside className="sidebar">
-      <div>
+    <aside className={`sidebar ${!isOpen ? 'collapsed' : ''}`}>
+      <div className="sidebar-header">
         <h2 className="sidebar-title">Electricity Bill</h2>
-        
+        <button
+          className="icon-btn-minimal"
+          onClick={onClose}
+          title="Collapse sidebar"
+          style={{ width: '24px', height: '24px', border: 'none' }}
+        >
+          <ChevronLeft size={14} />
+        </button>
+      </div>
+
+      <div>
         {/* If file is selected, show preview card; else show dropzone */}
         {selectedFile && previewUrl ? (
           <div className="bill-preview-card">
             <div className="preview-img-wrapper" onClick={() => onImageZoom(previewUrl)}>
               <img src={previewUrl} alt="Electricity Bill preview" />
               <div className="preview-zoom-overlay">
-                <Maximize2 size={16} />
-                <span>Click to expand</span>
+                <Maximize2 size={14} />
+                <span>Zoom</span>
               </div>
             </div>
             <div className="preview-meta">
@@ -63,13 +75,13 @@ export function BillUploader({
                 <div className="preview-size">{formatSize(selectedFile.size)}</div>
               </div>
               <button
-                className="icon-btn"
+                className="icon-btn-minimal"
                 onClick={onFileRemove}
                 disabled={disabled}
                 title="Remove photo"
-                style={{ color: 'var(--rose-primary)' }}
+                style={{ width: '28px', height: '28px' }}
               >
-                <Trash2 size={15} />
+                <Trash2 size={13} />
               </button>
             </div>
           </div>
@@ -89,7 +101,7 @@ export function BillUploader({
               disabled={disabled}
             />
             <div className="dropzone-icon">
-              <UploadCloud size={22} />
+              <UploadCloud size={18} />
             </div>
             <div>
               <div className="dropzone-text-main">Upload Bill Photo</div>
@@ -99,31 +111,31 @@ export function BillUploader({
         )}
       </div>
 
-      {/* Checklist / Capabilities */}
+      {/* Guidelines / Capabilities */}
       <div className="info-section">
-        <h3 className="sidebar-title" style={{ marginTop: '0.5rem' }}>Audit Capabilities</h3>
-        
+        <h3 className="sidebar-title">Audit Engine</h3>
+
         <div className="info-item">
-          <CheckCircle2 size={16} />
+          <CheckCircle2 size={14} />
           <div>
-            <strong>Tariff Verification</strong>
-            <div>Checks against domestic state tariff slabs, fixed charges & duties.</div>
+            <strong style={{ color: 'var(--text-primary)' }}>Tariff Calculation</strong>
+            <div>Domestic state slabs, fixed charges, and duty validation.</div>
           </div>
         </div>
 
         <div className="info-item">
-          <CheckCircle2 size={16} />
+          <CheckCircle2 size={14} />
           <div>
-            <strong>Anomaly Detection</strong>
-            <div>Flags meter reading jumps, arrears, and unusual surcharge spikes.</div>
+            <strong style={{ color: 'var(--text-primary)' }}>Anomaly Warnings</strong>
+            <div>Detects meter reading skips, arithmetic mismatches, and arrears.</div>
           </div>
         </div>
 
         <div className="info-item">
-          <ShieldCheck size={16} />
+          <ShieldCheck size={14} />
           <div>
-            <strong>Private & Local</strong>
-            <div>All OCR and reasoning run locally on your machine via Ollama & MCP.</div>
+            <strong style={{ color: 'var(--text-primary)' }}>Local & Private</strong>
+            <div>OCR, math tools, and LLM reasoning run 100% locally on your machine.</div>
           </div>
         </div>
       </div>
