@@ -17,14 +17,16 @@ import urllib.request
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
-
-from api.session import Session
-from mcp_servers.vision import extract_bill_data
+import mcp_servers.vision as vision_server
 
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 MODEL = os.environ.get("VISION_MODEL", os.environ.get("MAIN_MODEL", "qwen3.5:4b"))
+os.environ["VISION_MODEL"] = MODEL
+os.environ["MAIN_MODEL"] = MODEL
+vision_server.VISION_MODEL = MODEL
 DATASET_FILE = ROOT / "eval" / "bills_dataset.json"
+
+
 BILLS_DIR = ROOT / "eval" / "bills"
 RESULTS_FILE = ROOT / "eval" / "vision_eval_results.json"
 REPORT_FILE = ROOT / "eval" / "vision_benchmark_report.md"
@@ -74,8 +76,9 @@ def run_harness_vision_extraction(image_path: Path) -> tuple[dict, str, float]:
     """Run WattWise structured vision extraction pipeline with two-step state derivation."""
     start = time.time()
     try:
-        result_json_str = extract_bill_data(str(image_path))
+        result_json_str = vision_server.extract_bill_data(str(image_path))
         data = json.loads(result_json_str)
+
         elapsed = round(time.time() - start, 2)
         state_found = data.get("state")
         return data, state_found or "Unknown", elapsed
