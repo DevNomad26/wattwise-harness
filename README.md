@@ -59,15 +59,22 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## 📊 Running Evaluations (Local or Google Colab)
 
+For detailed information on the benchmark methodologies, see [`eval/README.md`](file:///c:/Users/sawna/OneDrive/Documents/Development/My_Projects/wattwise-harness/eval/README.md).
+
 ### Local Evaluation
 ```bash
+# 1. Run Tariff & Math Reasoning Benchmark
 python eval/run_eval.py
+
+# 2. Run Bill Photo Vision Benchmark
+python eval/run_vision_eval.py
 ```
 
 ### Accelerated GPU Evaluation on Google Colab
-1. Upload or open [`eval_colab.ipynb`](file:///c:/Users/sawna/OneDrive/Documents/Development/My_Projects/wattwise-harness/eval_colab.ipynb) in [Google Colab](https://colab.research.google.com/).
+1. Upload or open [`eval/eval_colab.ipynb`](file:///c:/Users/sawna/OneDrive/Documents/Development/My_Projects/wattwise-harness/eval/eval_colab.ipynb) in [Google Colab](https://colab.research.google.com/).
 2. Select **Runtime > Change runtime type > T4 GPU**.
-3. Run all cells to benchmark Base `qwen3.5:4b` vs. WattWise ReAct Harness and export the benchmark markdown report.
+3. Run all cells to benchmark Base `qwen3.5:4b` vs. WattWise ReAct Harness and export the benchmark markdown reports.
+
 
 ---
 
