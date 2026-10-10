@@ -23,7 +23,8 @@ MAX_RESULT_CHARS = 1500
 def build_prompt(question: str, image: Path | None) -> str:
     if image is None:
         return question
-    return f"{question}\nThe bill photo is at: {image}"
+    return f"{question}\nThe bill photo is at: {image.as_posix()}"
+
 
 
 def root_cause(exc: BaseException) -> BaseException:
