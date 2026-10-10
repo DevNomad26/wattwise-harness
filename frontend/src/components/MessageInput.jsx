@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ImagePlus, Loader2 } from 'lucide-react';
+import { Send, ImagePlus, Loader2, X, FileImage } from 'lucide-react';
 
-export function MessageInput({ onSendMessage, isProcessing, onFileSelect, hasImage }) {
+export function MessageInput({
+  onSendMessage,
+  isProcessing,
+  selectedFile,
+  onFileSelect,
+  onFileRemove,
+}) {
   const [input, setInput] = useState('');
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -15,7 +21,7 @@ export function MessageInput({ onSendMessage, isProcessing, onFileSelect, hasIma
 
   const handleSubmit = (e) => {
     e?.preventDefault();
-    if (!input.trim() || isProcessing) return;
+    if ((!input.trim() && !selectedFile) || isProcessing) return;
     onSendMessage(input.trim());
     setInput('');
     if (textareaRef.current) {
@@ -34,10 +40,32 @@ export function MessageInput({ onSendMessage, isProcessing, onFileSelect, hasIma
     if (e.target.files && e.target.files.length > 0) {
       onFileSelect(e.target.files[0]);
     }
+    // reset input value so re-uploading the same file works
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
     <footer className="input-area">
+      {/* Attached file indicator preview chip */}
+      {selectedFile && (
+        <div className="attached-file-chip">
+          <FileImage size={13} className="attached-file-icon" />
+          <span className="attached-file-name" title={selectedFile.name}>
+            {selectedFile.name}
+          </span>
+          <button
+            type="button"
+            className="attached-file-remove"
+            onClick={onFileRemove}
+            title="Remove attachment"
+          >
+            <X size={12} />
+          </button>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="input-box-wrapper">
         <input
           type="file"
@@ -50,16 +78,16 @@ export function MessageInput({ onSendMessage, isProcessing, onFileSelect, hasIma
 
         <button
           type="button"
-          className="icon-btn"
+          className="icon-btn-minimal"
           onClick={() => fileInputRef.current?.click()}
           disabled={isProcessing}
-          title={hasImage ? 'Bill photo attached' : 'Attach bill photo'}
+          title={selectedFile ? 'Change attached photo' : 'Attach bill photo'}
           style={{
-            color: hasImage ? 'var(--emerald-primary)' : 'var(--text-secondary)',
-            borderColor: hasImage ? 'var(--emerald-border)' : 'var(--border-subtle)',
+            color: selectedFile ? 'var(--text-primary)' : 'var(--text-muted)',
+            border: 'none',
           }}
         >
-          <ImagePlus size={18} />
+          <ImagePlus size={16} />
         </button>
 
         <textarea
@@ -76,11 +104,11 @@ export function MessageInput({ onSendMessage, isProcessing, onFileSelect, hasIma
         <button
           type="submit"
           className="send-btn"
-          disabled={!input.trim() || isProcessing}
+          disabled={(!input.trim() && !selectedFile) || isProcessing}
           title="Send message (Enter)"
           aria-label="Send message"
         >
-          {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+          {isProcessing ? <Loader2 size={16} className="animate-spin" /> : <Send size={15} />}
         </button>
       </form>
     </footer>

@@ -1,11 +1,34 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
-import { BillUploader } from './components/BillUploader';
+import { Sidebar } from './components/Sidebar';
 import { ChatList } from './components/ChatList';
 import { QuickChips } from './components/QuickChips';
 import { MessageInput } from './components/MessageInput';
 import { ImageModal } from './components/ImageModal';
 import { checkHealth, sendChatMessage, deleteSession } from './services/api';
+
+const STORAGE_THREADS_KEY = 'wattwise_chat_threads';
+const STORAGE_ACTIVE_KEY = 'wattwise_active_thread_id';
+
+function loadStoredThreads() {
+  try {
+    const raw = localStorage.getItem(STORAGE_THREADS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function createNewThread() {
+  return {
+    id: `thread-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+    title: 'New conversation',
+    sessionId: null,
+    messages: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
 
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('wattwise_theme') || 'dark');
@@ -13,13 +36,41 @@ export default function App() {
     const saved = localStorage.getItem('wattwise_sidebar');
     return saved !== null ? JSON.parse(saved) : true;
   });
+
+  const [threads, setThreads] = useState(loadStoredThreads);
+  const [activeThreadId, setActiveThreadId] = useState(() => {
+    const savedActive = localStorage.getItem(STORAGE_ACTIVE_KEY);
+    const loaded = loadStoredThreads();
+    if (savedActive && loaded.some((t) => t.id === savedActive)) {
+      return savedActive;
+    }
+    return loaded.length > 0 ? loaded[0].id : null;
+  });
+
   const [health, setHealth] = useState(null);
-  const [sessionId, setSessionId] = useState(null);
-  const [messages, setMessages] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [zoomedImage, setZoomedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Sync threads to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_THREADS_KEY, JSON.stringify(threads));
+  }, [threads]);
+
+  // Sync active thread ID to localStorage
+  useEffect(() => {
+    if (activeThreadId) {
+      localStorage.setItem(STORAGE_ACTIVE_KEY, activeThreadId);
+    } else {
+      localStorage.removeItem(STORAGE_ACTIVE_KEY);
+    }
+  }, [activeThreadId]);
+
+  // Current active thread object
+  const activeThread = threads.find((t) => t.id === activeThreadId) || null;
+  const currentMessages = activeThread ? activeThread.messages : [];
+  const currentSessionId = activeThread ? activeThread.sessionId : null;
 
   // Apply Theme
   useEffect(() => {
@@ -59,9 +110,6 @@ export default function App() {
     }
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
-    if (!sidebarOpen) {
-      setSidebarOpen(true);
-    }
   };
 
   const handleFileRemove = () => {
@@ -72,68 +120,154 @@ export default function App() {
     setPreviewUrl(null);
   };
 
-  // Reset Session
-  const handleNewSession = async () => {
-    if (sessionId) {
-      await deleteSession(sessionId);
+  // New Chat Handler
+  const handleNewChat = () => {
+    // If currently already on an empty thread, just stay on it
+    if (activeThread && activeThread.messages.length === 0) {
+      return;
     }
+    const newThread = createNewThread();
+    setThreads((prev) => [newThread, ...prev]);
+    setActiveThreadId(newThread.id);
     handleFileRemove();
-    setSessionId(null);
-    setMessages([]);
+  };
+
+  // Select a Chat Thread
+  const handleSelectThread = (threadId) => {
+    if (threadId === activeThreadId) return;
+    setActiveThreadId(threadId);
+    handleFileRemove();
+  };
+
+  // Delete a Chat Thread
+  const handleDeleteThread = async (threadId) => {
+    const target = threads.find((t) => t.id === threadId);
+    if (target?.sessionId) {
+      deleteSession(target.sessionId);
+    }
+
+    const remaining = threads.filter((t) => t.id !== threadId);
+    setThreads(remaining);
+
+    if (activeThreadId === threadId) {
+      if (remaining.length > 0) {
+        setActiveThreadId(remaining[0].id);
+      } else {
+        const fresh = createNewThread();
+        setThreads([fresh]);
+        setActiveThreadId(fresh.id);
+      }
+      handleFileRemove();
+    }
   };
 
   // Send Message
   const handleSendMessage = async (text) => {
-    if (!text || isProcessing) return;
+    if ((!text && !selectedFile) || isProcessing) return;
 
-    const userMessageId = `user-${Date.now()}`;
+    let targetThreadId = activeThreadId;
+    let targetThread = activeThread;
+
+    // If no active thread exists, initialize one
+    if (!targetThread) {
+      targetThread = createNewThread();
+      targetThreadId = targetThread.id;
+      setThreads((prev) => [targetThread, ...prev]);
+      setActiveThreadId(targetThreadId);
+    }
+
     const currentPreview = previewUrl;
     const currentFile = selectedFile;
+    const promptText = text || 'Please check this attached electricity bill.';
 
-    // Optimistically append user message
-    const newUserMsg = {
-      id: userMessageId,
+    const userMessage = {
+      id: `user-${Date.now()}`,
       role: 'user',
-      content: text,
+      content: promptText,
       imagePreview: currentPreview,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
     };
 
-    setMessages((prev) => [...prev, newUserMsg]);
+    // Update active thread title if this is the first message
+    const updatedTitle =
+      targetThread.messages.length === 0
+        ? promptText.length > 36
+          ? `${promptText.slice(0, 36).trim()}...`
+          : promptText
+        : targetThread.title;
+
+    // Optimistically update messages
+    const updatedMessagesWithUser = [...targetThread.messages, userMessage];
+
+    setThreads((prev) =>
+      prev.map((t) =>
+        t.id === targetThreadId
+          ? {
+              ...t,
+              title: updatedTitle,
+              messages: updatedMessagesWithUser,
+              updatedAt: new Date().toISOString(),
+            }
+          : t
+      )
+    );
+
     setIsProcessing(true);
 
     try {
       const response = await sendChatMessage({
-        message: text,
-        sessionId: sessionId,
+        message: promptText,
+        sessionId: targetThread.sessionId,
         imageFile: currentFile,
       });
 
-      if (response.session_id && !sessionId) {
-        setSessionId(response.session_id);
-      }
-
-      // Add Assistant Message (pure text without backend execution logs attached)
-      const newAssistantMsg = {
+      const assistantMessage = {
         id: `assistant-${Date.now()}`,
         role: 'assistant',
         content: response.answer,
         seconds: response.seconds,
         error: response.error,
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
       };
 
-      setMessages((prev) => [...prev, newAssistantMsg]);
+      const finalMessages = [...updatedMessagesWithUser, assistantMessage];
+
+      setThreads((prev) =>
+        prev.map((t) =>
+          t.id === targetThreadId
+            ? {
+                ...t,
+                sessionId: response.session_id || t.sessionId,
+                messages: finalMessages,
+                updatedAt: new Date().toISOString(),
+              }
+            : t
+        )
+      );
+
+      // Clear staged file after successful upload so follow-ups don't re-upload
+      handleFileRemove();
     } catch (err) {
       console.error('Chat error:', err);
       const errorMsg = {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: `**Error:** ${err.message || 'Unable to complete request. Please ensure the backend and Ollama are running.'}`,
+        content: `**Error:** ${err.message || 'Unable to connect to backend server. Please verify that Ollama and FastAPI are running.'}`,
         error: true,
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
       };
-      setMessages((prev) => [...prev, errorMsg]);
+
+      setThreads((prev) =>
+        prev.map((t) =>
+          t.id === targetThreadId
+            ? {
+                ...t,
+                messages: [...updatedMessagesWithUser, errorMsg],
+                updatedAt: new Date().toISOString(),
+              }
+            : t
+        )
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -146,22 +280,19 @@ export default function App() {
         health={health}
         theme={theme}
         onToggleTheme={toggleTheme}
-        onNewSession={handleNewSession}
-        isProcessing={isProcessing}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={toggleSidebar}
       />
 
       {/* Main Workspace */}
       <div className="main-workspace">
-        {/* Left Sidebar: Photo Uploader & Guidelines */}
-        <BillUploader
-          selectedFile={selectedFile}
-          previewUrl={previewUrl}
-          onFileSelect={handleFileSelect}
-          onFileRemove={handleFileRemove}
-          onImageZoom={(url) => setZoomedImage(url)}
-          disabled={isProcessing}
+        {/* Left Sidebar: New Chat & Chat History */}
+        <Sidebar
+          threads={threads}
+          activeThreadId={activeThreadId}
+          onSelectThread={handleSelectThread}
+          onNewChat={handleNewChat}
+          onDeleteThread={handleDeleteThread}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
@@ -169,7 +300,7 @@ export default function App() {
         {/* Right Area: Chat Stream */}
         <main className="chat-container">
           <ChatList
-            messages={messages}
+            messages={currentMessages}
             isProcessing={isProcessing}
             onImageZoom={(url) => setZoomedImage(url)}
           />
@@ -184,8 +315,9 @@ export default function App() {
           <MessageInput
             onSendMessage={handleSendMessage}
             isProcessing={isProcessing}
+            selectedFile={selectedFile}
             onFileSelect={handleFileSelect}
-            hasImage={!!selectedFile}
+            onFileRemove={handleFileRemove}
           />
         </main>
       </div>

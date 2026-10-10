@@ -1,12 +1,10 @@
 import React from 'react';
-import { Zap, Sun, Moon, RotateCcw, PanelLeft, PanelLeftClose } from 'lucide-react';
+import { Zap, Sun, Moon, PanelLeft, PanelLeftClose } from 'lucide-react';
 
 export function Navbar({
   health,
   theme,
   onToggleTheme,
-  onNewSession,
-  isProcessing,
   sidebarOpen,
   onToggleSidebar,
 }) {
@@ -45,17 +43,6 @@ export function Navbar({
               : 'Connecting...'}
           </span>
         </div>
-
-        {/* New Session Button */}
-        <button
-          className="btn-minimal"
-          onClick={onNewSession}
-          disabled={isProcessing}
-          title="Start fresh conversation"
-        >
-          <RotateCcw size={13} />
-          <span>Reset</span>
-        </button>
 
         {/* Dark / Light Mode Switch */}
         <button
