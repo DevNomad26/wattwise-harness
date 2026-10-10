@@ -17,6 +17,9 @@ import urllib.request
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
+from dotenv import load_dotenv
+load_dotenv(ROOT / ".env")
+
 import mcp_servers.vision as vision_server
 
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")

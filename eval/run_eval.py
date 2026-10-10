@@ -16,6 +16,9 @@ import urllib.request
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from dotenv import load_dotenv
+load_dotenv(ROOT / ".env")
+
 from api.session import Session
 
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")

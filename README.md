@@ -1,102 +1,117 @@
-# WattWise Harness ⚡
+#  WattWise
 
-WattWise is an agentic electricity bill auditor and energy advisor powered by local LLMs (via Ollama) and Model Context Protocol (MCP) servers. It verifies meter readings against state tariff slabs, identifies overcharges and billing anomalies, drafts consumer complaints, and calculates solar rooftop ROI.
+**WattWise** is an open-source, locally-hosted AI verification system that acts as your personal electricity bill auditor. 
 
----
-
-## 🏗️ Architecture
-
-- **Frontend (`frontend/`)**: Modern React + Vite web client with dark/light mode, chat history stored in `localStorage`, quick-action chips, markdown rendering, and collapsible sidebar.
-- **Backend API (`api/`)**: FastAPI server providing `/api/health`, `/api/chat`, and `/api/sessions/{session_id}` with multipart bill upload support.
-- **Agent Loop (`wattwise/`)**: ReAct agent execution loop with reasoning failsafe interception and dynamic skill loader.
-- **MCP Servers (`mcp_servers/`)**:
-  - `vision.py`: Preprocessing & OCR bill data extraction.
-  - `tariff.py`: Domestic tariff slab engine.
-  - `calculator.py`: Safe arithmetic evaluator.
-- **Skills (`skills/`)**: Internal skills for bill checking, complaints, solar ROI, and tariff explanation.
-- **Eval Harness (`eval/`)**: Benchmark suite comparing Base `qwen3.5:4b` vs. WattWise Agent.
+By leveraging an original **Model Harness** and strict **Agent Skills**, WattWise allows consumers to securely audit their electricity bills for mathematical errors, impossible consumption readings, and tariff mistakes—all without sacrificing their personal data privacy.
 
 ---
 
-## 🚀 Getting Started
+##  The Problem We Solve & Data Privacy
+Electricity bills are notoriously difficult to decipher, and mistakes by distribution companies (DISCOMs) are common. Consumers often overpay because they cannot mathematically verify complex tariff structures, slab rates, or net-metering (solar) adjustments. 
 
-### 1. Prerequisites
-- Python 3.11+
-- Node.js 18+
-- [Ollama](https://ollama.com/) running locally:
-  ```bash
-  ollama run qwen3.5:4b
-  ```
+Because electricity bills contain sensitive personal addresses, account numbers, and financial data, uploading them to third-party cloud APIs (like OpenAI or Anthropic) is a privacy risk.
 
-### 2. Backend Setup
-Create your virtual environment and install dependencies:
+**WattWise solves this by running 100% locally on your machine.** We use open-weight models (`qwen3.5:4b`) running on Ollama, ensuring your data never leaves your computer.
+
+---
+
+## Architecture & Open-Source AI
+
+### 1. The Model Harness
+Small language models (like 4B parameters) are incredibly fast and fit on consumer hardware, but they suffer from hallucinations and struggle with floating-point math. 
+To solve this, we built an original, multi-turn conversational **ReAct Agent Harness**. Our harness intercepts hallucinations, maintains a persistent session history across turns, and acts as the strict orchestrator between the LLM and the real world.
+
+### 2. Agent Skills
+Instead of relying on prompt engineering, the agent dynamically loads custom **Skills** formatted to a standard `SKILL.md` structure. This enables complex, multi-step workflows such as:
+- `bill-checker`: Validates physically impossible consumption rates.
+- `complaint-letter`: Drafts automated legal notices to DISCOMs for refunds.
+- `solar-roi-calculator`: Estimates rooftop solar capacity and payback periods.
+
+---
+
+##  Evaluations & Benchmarks
+
+We rigorously benchmarked our Model Harness against an unassisted Base `qwen3.5:4b` model to prove the effectiveness of our architecture. 
+Using our evaluation suite, the WattWise Harness completely eliminates arithmetic hallucinations and achieves very good accuracy on ground-truth tariff lookups.
+
+For full benchmark metrics, detailed case-by-case outputs, and vision extraction accuracy, see the [Evaluation Report (`eval/README.md`)](eval/README.md).
+
+---
+
+## 📂 Project Structure
+
+```text
+wattwise-harness/
+├── api/                  # FastAPI backend server and persistent session management
+├── wattwise/             # The core Agentic Model Harness (Execution Loop & Ollama Client)
+├── mcp_servers/          # External tools (Safe Calculator, Tariff DB, Vision OCR Engine)
+├── skills/               # Reusable agent workflows (SKILL.md format)
+├── eval/                 # Benchmarking and accuracy testing suite
+├── frontend/             # Modern React + Vite web client (Dark mode, Trace Inspector)
+├── data/                 # Static JSON databases (Electricity rates across Indian states)
+├── cli.py                # Interactive command-line chat interface
+└── qwen-16k.Modelfile    # Configuration to build the 16K context window local model
+```
+
+---
+
+## 🛠️ Quick Start & Local Setup
+
+### 1. Build the Custom 16K Context AI Model
+Electricity bills contain massive amounts of OCR text. To prevent the local LLM from running out of memory, we must increase its context window to 16,000 tokens.
+Make sure you have [Ollama](https://ollama.com/) installed, then run:
+```bash
+ollama pull qwen3.5:4b
+ollama create qwen3.5:4b-16k -f qwen-16k.Modelfile
+```
+
+### 2. Setup the Python Backend
 ```bash
 python -m venv .venv
-# On Windows PowerShell:
-.venv\Scripts\Activate.ps1
-# On Linux / macOS:
-source .venv/bin/activate
-
+source .venv/bin/activate  # Or .\.venv\Scripts\activate on Windows
 pip install -r requirements.txt
+
+# Configure your environment
+cp .env.example .env
 ```
 
-Start the FastAPI backend:
+---
+
+## Running WattWise
+
+You have two options to run WattWise: The beautiful Web UI or the interactive Terminal CLI.
+
+### Option A: The Web UI (Frontend + Backend)
+You will need two terminal windows.
+
+**Terminal 1 (Backend API):**
 ```bash
-uvicorn api.server:app --port 8000 --reload
+python -m uvicorn api.server:app --port 8000
 ```
 
-### 3. Frontend Setup
-In a new terminal:
+**Terminal 2 (React Frontend):**
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+*Then open `http://localhost:5173` in your browser!*
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
----
-
-## 📊 Running Evaluations (Local or Google Colab)
-
-For detailed information on the benchmark methodologies, see [`eval/README.md`](file:///c:/Users/sawna/OneDrive/Documents/Development/My_Projects/wattwise-harness/eval/README.md).
-
-### Local Evaluation
+### Option B: Interactive CLI
+If you prefer the terminal, you can chat with the agent directly (and even pass images):
 ```bash
-# 1. Run Tariff & Math Reasoning Benchmark
-python eval/run_eval.py
-
-# 2. Run Bill Photo Vision Benchmark
-python eval/run_vision_eval.py
-```
-
-### Accelerated GPU Evaluation on Google Colab
-1. Upload or open [`eval/eval_colab.ipynb`](file:///c:/Users/sawna/OneDrive/Documents/Development/My_Projects/wattwise-harness/eval/eval_colab.ipynb) in [Google Colab](https://colab.research.google.com/).
-2. Select **Runtime > Change runtime type > T4 GPU**.
-3. Run all cells to benchmark Base `qwen3.5:4b` vs. WattWise ReAct Harness and export the benchmark markdown reports.
-
-
----
-
-## 💻 CLI Usage
-
-You can also run WattWise directly from the terminal:
-```bash
-# Interactive mode
 python cli.py
-
-# Single question
-python cli.py "What is the domestic electricity bill for 250 units in Rajasthan?"
-
-# Bill photo check
-python cli.py "Is my bill correct?" --image "path/to/bill.jpg"
 ```
+*(Type your questions or hit Enter when prompted for a bill photo path).*
 
 ---
 
-## 🧪 Testing
+## Team Members
 
-Run backend test suite:
-```bash
-pytest
-```
+Built with ❤️ by a team from **MNIT Jaipur**:
+- **Udayan Amipara** (MNIT Jaipur - CSE)
+- **Akash Wadhvani** (MNIT Jaipur - CSE)
+- **Naman Sawnani** (MNIT Jaipur - ECE)
+
+## License
+This project is licensed under the MIT License.
