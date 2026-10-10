@@ -1,0 +1,165 @@
+[
+  {
+    "id": "bill_1",
+    "filename": "bill_1.jpg",
+    "ground_truth_state": "Rajasthan",
+    "expected_discoms": [
+      "JVVNL",
+      "Jaipur",
+      "Rajasthan",
+      "Vidyut"
+    ],
+    "base_state": "Rajasthan",
+    "base_state_correct": true,
+    "base_discom_correct": true,
+    "base_time": 30.37,
+    "base_raw_output": "Based on the provided electricity bill image, here are the details you requested:\n\n*   **Indian State:** **Rajasthan** (The bill is from Jaipur, and the company name indicates Rajasthan).\n*   **Electricity Company (DISCOM):** **Jaipur Vidhyut Vitran Gam Limited** (Commonly known as VVGL).\n*   **Total Units Billed:** **11,223,059** units (Found under \"Net Billed Units\").\n*   **Total Amount Due:** **\u20b995,395,671** (Found in row 23 labeled \"Net Payable Amount up to Due Date\").",
+    "harness_state": "Rajasthan",
+    "harness_state_correct": true,
+    "harness_discom": "JAIPUR VIDYUT VITRAN GAM LIMITED",
+    "harness_discom_correct": true,
+    "harness_units": 11223059.0,
+    "harness_amount": 95395671.0,
+    "harness_warnings": [
+      "IMPOSSIBLE UNITS: billed units 11223059.0 are more than the most a 10.0 kW connection can use in 1.0 month(s): 7440.0 units (10.0 kW x 24 h x 31 days x 1.0). The meter reading or the bill is wrong.",
+      "current_reading - previous_reading = 1286.0, but billed units = 11223059.0. This can be a misread, an export/solar adjustment, or a billing error."
+    ],
+    "harness_time": 10.03
+  },
+  {
+    "id": "bill_2",
+    "filename": "bill_2.webp",
+    "ground_truth_state": "Maharashtra",
+    "expected_discoms": [
+      "MSEDCL",
+      "Mahavitaran",
+      "Maharashtra"
+    ],
+    "base_state": "Maharashtra",
+    "base_state_correct": true,
+    "base_discom_correct": true,
+    "base_time": 14.66,
+    "base_raw_output": "Based on the provided electricity bill image, here are the details you requested:\n\n*   **Indian State:** Maharashtra (indicated by \"Maharashtra State Electricity Distribution Co. Ltd.\" and the website `mahadiscom.in`)\n*   **Electricity Company (DISCOM):** Mahavitaran (Maharashtra State Electricity Distribution Co. Ltd.)\n*   **Total Units Billed:** 86 units (Calculated from Current Reading 15108 minus Previous Reading 15022)\n*   **Total Amount Due:** Rs. 590.00",
+    "harness_state": "Maharashtra",
+    "harness_state_correct": true,
+    "harness_discom": "Maharashtra State Electricity Distribution Co. Ltd.",
+    "harness_discom_correct": true,
+    "harness_units": null,
+    "harness_amount": 600.0,
+    "harness_warnings": [
+      "NON-DOMESTIC: this is a LT-I Res-3-Phase connection. Tariff data covers domestic connections only, so the bill cannot be recomputed from the tariff.",
+      "total_amount_due=600.0 was read without a printed label; double-check it on the bill.",
+      "load_kw=5.0 was read without a printed label; double-check it on the bill."
+    ],
+    "harness_time": 6.99
+  },
+  {
+    "id": "bill_3",
+    "filename": "bill_3.jpg",
+    "ground_truth_state": "Maharashtra",
+    "expected_discoms": [
+      "MSEDCL",
+      "Mahavitaran",
+      "Maharashtra"
+    ],
+    "base_state": "Not Identified",
+    "base_state_correct": false,
+    "base_discom_correct": false,
+    "base_time": 63.61,
+    "base_raw_output": "",
+    "harness_state": "Maharashtra",
+    "harness_state_correct": true,
+    "harness_discom": "Maharashtra State Electricity Distribution Co. Ltd.",
+    "harness_discom_correct": true,
+    "harness_units": null,
+    "harness_amount": 790706190.0,
+    "harness_warnings": [
+      "UNUSUAL AMOUNT: Rs 790706190.0 for even the most a 200.0 kW connection can use (148800.0 units) is Rs 5313.89 per unit; tariffs are far below Rs 1000 per unit. The amount may be misread, include large arrears, or be wrong.",
+      "NON-DOMESTIC: this is a Industrial connection. Tariff data covers domestic connections only, so the bill cannot be recomputed from the tariff.",
+      "total_amount_due=790706190.0 was read without a printed label; double-check it on the bill.",
+      "load_kw=200.0 was read without a printed label; double-check it on the bill."
+    ],
+    "harness_time": 6.35
+  },
+  {
+    "id": "bill_4",
+    "filename": "bill_4.png",
+    "ground_truth_state": "Gujarat",
+    "expected_discoms": [
+      "PGVCL",
+      "DGVCL",
+      "UGVCL",
+      "MGVCL",
+      "Gujarat",
+      "Paschim"
+    ],
+    "base_state": "Gujarat",
+    "base_state_correct": true,
+    "base_discom_correct": true,
+    "base_time": 20.95,
+    "base_raw_output": "Based on the electricity bill provided in the image, here are the details you requested:\n\n*   **Indian State:** Gujarat (indicated by \"Paschim Gujarat\" and the city of Rajkot)\n*   **Electricity Company (DISCOM):** Paschim Gujarat Vij Company Ltd.\n*   **Total Units Billed:** 150 units (Previous Reading: 4520, Present Reading: 4670)\n*   **Total Amount Due:** Rs 655.25 (Net Amount Payable)",
+    "harness_state": "Gujarat",
+    "harness_state_correct": true,
+    "harness_discom": "PASCHIM GUJARAT VIJ COMPANY LTD.",
+    "harness_discom_correct": true,
+    "harness_units": 150.0,
+    "harness_amount": 655.25,
+    "harness_warnings": [],
+    "harness_time": 8.78
+  },
+  {
+    "id": "bill_5",
+    "filename": "bill_5.webp",
+    "ground_truth_state": "Delhi",
+    "expected_discoms": [
+      "BSES",
+      "TPDDL",
+      "Tata Power",
+      "Delhi",
+      "Rajdhani",
+      "Yamuna"
+    ],
+    "base_state": "Not Identified",
+    "base_state_correct": false,
+    "base_discom_correct": false,
+    "base_time": 69.21,
+    "base_raw_output": "",
+    "harness_state": "Delhi",
+    "harness_state_correct": true,
+    "harness_discom": "BSES Rajdhani Power Ltd.",
+    "harness_discom_correct": true,
+    "harness_units": null,
+    "harness_amount": 230.0,
+    "harness_warnings": [
+      "previous_reading: '20-05-2021' is not a single number, so it was left empty.",
+      "current_reading: '21-06-2021' is not a single number, so it was left empty."
+    ],
+    "harness_time": 7.78
+  },
+  {
+    "id": "bill_6",
+    "filename": "bill_6.webp",
+    "ground_truth_state": "Karnataka",
+    "expected_discoms": [
+      "BESCOM",
+      "MESCOM",
+      "HESCOM",
+      "GESCOM",
+      "Karnataka",
+      "Bangalore"
+    ],
+    "base_state": "Karnataka",
+    "base_state_correct": true,
+    "base_discom_correct": true,
+    "base_time": 23.94,
+    "base_raw_output": "Based on the provided electricity bill photo, here are the details you requested:\n\n*   **Indian State:** Karnataka (indicated by \"Wholly Owned Government of Karnataka Undertaking\")\n*   **Electricity Company (DISCOM):** Bangalore Electricity Supply Company Limited (BESCOM)\n*   **Total Units Billed:** 58 KWH (found in the \"Net Consumption\" row under the Meter Readings section)\n*   **Total Amount Due:** Rs. 302.00 (found in the \"Net Payable Amount\" row and written out as \"Rupees Three Hundred Two Only\")",
+    "harness_state": "Karnataka",
+    "harness_state_correct": true,
+    "harness_discom": "Bangalore Electricity Supply Company Limited",
+    "harness_discom_correct": true,
+    "harness_units": null,
+    "harness_amount": 302.0,
+    "harness_warnings": [],
+    "harness_time": 7.68
+  }
+]

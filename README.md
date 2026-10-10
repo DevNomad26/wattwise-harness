@@ -23,18 +23,26 @@ To solve this, we built an original, multi-turn conversational **ReAct Agent Har
 
 ### 2. Agent Skills
 Instead of relying on prompt engineering, the agent dynamically loads custom **Skills** formatted to a standard `SKILL.md` structure. This enables complex, multi-step workflows such as:
-- `bill-checker`: Validates physically impossible consumption rates.
-- `complaint-letter`: Drafts automated legal notices to DISCOMs for refunds.
-- `solar-roi-calculator`: Estimates rooftop solar capacity and payback periods.
+- `bill-checker`: Validates physically impossible consumption rates and billing discrepancies.
+- `complaint-letter`: Drafts automated formal dispute and refund notices to DISCOMs.
+- `solar-roi-calculator`: Estimates rooftop solar capacity (kW), generation, and payback periods.
+- `energy-saving-advisor`: Recommends appliance-level actions to reduce usage and drop to cheaper tariff slabs.
+- `explain-bill`: Breaks down fixed charges, energy slabs, and duties in clear, plain language.
 
 ---
 
-##  Evaluations & Benchmarks
+## 📊 Evaluations & Benchmarks
 
 We rigorously benchmarked our Model Harness against an unassisted Base `qwen3.5:4b` model to prove the effectiveness of our architecture. 
 Using our evaluation suite, the WattWise Harness completely eliminates arithmetic hallucinations and achieves very good accuracy on ground-truth tariff lookups.
 
-For full benchmark metrics, detailed case-by-case outputs, and vision extraction accuracy, see the [Evaluation Report (`eval/README.md`)](eval/README.md).
+For full benchmark methodology and interactive Colab setup, see the [Evaluation Suite Guide (`eval/README.md`)](eval/README.md).
+
+### 📑 Evaluation Reports & Results
+- [Benchmark Report (`eval/reports/benchmark_report.md`)](eval/reports/benchmark_report.md): Summary comparison table on multi-slab tariff math and arithmetic accuracy.
+- [Evaluation Results (`eval/reports/eval_results.json`)](eval/reports/eval_results.json): Full per-case traces, tool invocations, predictions, and latencies.
+- [Vision Benchmark Report (`eval/reports/vision_benchmark_report.md`)](eval/reports/vision_benchmark_report.md): State identification, DISCOM recognition, and factor extraction accuracy from bill photos.
+- [Vision Evaluation Results (`eval/reports/vision_eval_results.json`)](eval/reports/vision_eval_results.json): Raw extraction outputs, JSON schema validation logs, and integrity checks.
 
 ---
 
