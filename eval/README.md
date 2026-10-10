@@ -83,8 +83,8 @@ python eval/run_vision_eval.py
 
 | File | Description |
 | :--- | :--- |
-| [`eval/benchmark_report.md`](benchmark_report.md) | Summary markdown table comparing Base Model vs. Harness on tariff math. |
-| [`eval/eval_results.json`](eval_results.json) | Detailed per-case execution logs, predictions, traces, and latency. |
-| [`eval/vision_benchmark_report.md`](vision_benchmark_report.md) | Markdown table comparing state and factor extraction from bill photos. |
-| [`eval/vision_eval_results.json`](vision_eval_results.json) | Full vision extraction outputs and score breakdowns. |
+| [`eval/reports/benchmark_report.md`](reports/benchmark_report.md) | Summary markdown table comparing Base Model vs. Harness on tariff math. |
+| [`eval/reports/eval_results.json`](reports/eval_results.json) | Detailed per-case execution logs, predictions, traces, and latency. |
+| [`eval/reports/vision_benchmark_report.md`](reports/vision_benchmark_report.md) | Markdown table comparing state and factor extraction from bill photos. |
+| [`eval/reports/vision_eval_results.json`](reports/vision_eval_results.json) | Full vision extraction outputs and score breakdowns. |
 | [`eval/eval_colab.ipynb`](eval_colab.ipynb) | Ready-to-run Jupyter notebook for Google Colab. |
