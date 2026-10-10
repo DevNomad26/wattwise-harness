@@ -1,0 +1,157 @@
+[
+  {
+    "id": "tariff_mh_150",
+    "category": "tariff_math",
+    "state": "Maharashtra",
+    "units": 150,
+    "prompt": "Calculate the domestic electricity bill for 150 units in Maharashtra.",
+    "ground_truth": {
+      "fixed_charge": 130.0,
+      "energy_charge": 1176.0,
+      "duty": 188.16,
+      "total_amount": 1494.16,
+      "discom": "MSEDCL"
+    }
+  },
+  {
+    "id": "tariff_mh_80",
+    "category": "tariff_math",
+    "state": "Maharashtra",
+    "units": 80,
+    "prompt": "What is the domestic electricity bill for 80 units in Maharashtra?",
+    "ground_truth": {
+      "fixed_charge": 130.0,
+      "energy_charge": 444.8,
+      "duty": 71.17,
+      "total_amount": 645.97,
+      "discom": "MSEDCL"
+    }
+  },
+  {
+    "id": "tariff_mh_350",
+    "category": "tariff_math",
+    "state": "Maharashtra",
+    "units": 350,
+    "prompt": "How much will 350 units cost for a domestic consumer in Maharashtra?",
+    "ground_truth": {
+      "fixed_charge": 130.0,
+      "energy_charge": 3868.0,
+      "duty": 618.88,
+      "total_amount": 4616.88,
+      "discom": "MSEDCL"
+    }
+  },
+  {
+    "id": "tariff_gj_180",
+    "category": "tariff_math",
+    "state": "Gujarat",
+    "units": 180,
+    "prompt": "Calculate the electricity bill for 180 units in Gujarat.",
+    "ground_truth": {
+      "fixed_charge": 0.0,
+      "energy_charge": 659.5,
+      "duty": 98.93,
+      "total_amount": 758.43,
+      "discom": "PGVCL"
+    }
+  },
+  {
+    "id": "tariff_gj_40",
+    "category": "tariff_math",
+    "state": "Gujarat",
+    "units": 40,
+    "prompt": "What is the domestic electricity bill for 40 units in Gujarat?",
+    "ground_truth": {
+      "fixed_charge": 0.0,
+      "energy_charge": 122.0,
+      "duty": 18.3,
+      "total_amount": 140.3,
+      "discom": "PGVCL"
+    }
+  },
+  {
+    "id": "tariff_rj_250",
+    "category": "tariff_math",
+    "state": "Rajasthan",
+    "units": 250,
+    "prompt": "Calculate the domestic electricity bill for 250 units in Rajasthan.",
+    "ground_truth": {
+      "energy_charge": 1622.5,
+      "total_amount": 1622.5,
+      "discom": "JVVNL"
+    }
+  },
+  {
+    "id": "tariff_rj_90",
+    "category": "tariff_math",
+    "state": "Rajasthan",
+    "units": 90,
+    "prompt": "What is the domestic electricity bill for 90 units in Rajasthan?",
+    "ground_truth": {
+      "energy_charge": 497.5,
+      "total_amount": 497.5,
+      "discom": "JVVNL"
+    }
+  },
+  {
+    "id": "tariff_delhi_250",
+    "category": "tariff_math",
+    "state": "Delhi",
+    "units": 250,
+    "prompt": "Calculate the domestic electricity bill for 250 units in Delhi.",
+    "ground_truth": {
+      "energy_charge": 825.0,
+      "duty": 41.25,
+      "total_amount": 866.25,
+      "discom": "BSES / TPDDL"
+    }
+  },
+  {
+    "id": "tariff_delhi_500",
+    "category": "tariff_math",
+    "state": "Delhi",
+    "units": 500,
+    "prompt": "How much is the domestic electricity bill for 500 units in Delhi?",
+    "ground_truth": {
+      "energy_charge": 2150.0,
+      "duty": 107.5,
+      "total_amount": 2257.5,
+      "discom": "BSES / TPDDL"
+    }
+  },
+  {
+    "id": "tariff_ka_200",
+    "category": "tariff_math",
+    "state": "Karnataka",
+    "units": 200,
+    "prompt": "What is the domestic electricity bill for 200 units in Karnataka?",
+    "ground_truth": {
+      "energy_charge": 1160.0,
+      "duty": 104.4,
+      "total_amount": 1264.4,
+      "discom": "BESCOM"
+    }
+  },
+  {
+    "id": "tariff_unsupported_state",
+    "category": "boundary_check",
+    "state": "Kerala",
+    "units": 150,
+    "prompt": "What is the domestic electricity bill for 150 units in Kerala?",
+    "ground_truth": {
+      "supported": false,
+      "expected_behavior": "Should state that Kerala tariff data is not supported yet, without hallucinating fake figures."
+    }
+  },
+  {
+    "id": "solar_roi_300",
+    "category": "solar_roi",
+    "units": 300,
+    "prompt": "I consume around 300 units per month. Estimate the required solar rooftop system capacity and payback period.",
+    "ground_truth": {
+      "capacity_kw_range": [2.0, 3.0],
+      "annual_generation_units_range": [3000, 4500],
+      "expected_skill": "solar-roi-calculator"
+    }
+  }
+]

@@ -6,7 +6,7 @@ WattWise is an agentic electricity bill auditor and energy advisor powered by lo
 
 ## 🏗️ Architecture
 
-- **Frontend (`frontend/`)**: Modern React + Vite web client with dark/light mode, drag-and-drop bill photo uploader, quick-action chips, markdown rendering, and collapsible ReAct agent trace inspector.
+- **Frontend (`frontend/`)**: Modern React + Vite web client with dark/light mode, chat history stored in `localStorage`, quick-action chips, markdown rendering, and collapsible sidebar.
 - **Backend API (`api/`)**: FastAPI server providing `/api/health`, `/api/chat`, and `/api/sessions/{session_id}` with multipart bill upload support.
 - **Agent Loop (`wattwise/`)**: ReAct agent execution loop with reasoning failsafe interception and dynamic skill loader.
 - **MCP Servers (`mcp_servers/`)**:
@@ -14,7 +14,7 @@ WattWise is an agentic electricity bill auditor and energy advisor powered by lo
   - `tariff.py`: Domestic tariff slab engine.
   - `calculator.py`: Safe arithmetic evaluator.
 - **Skills (`skills/`)**: Internal skills for bill checking, complaints, solar ROI, and tariff explanation.
-- **Eval Harness (`eval/`)**: Benchmarking and accuracy testing suite.
+- **Eval Harness (`eval/`)**: Benchmark suite comparing Base `qwen3.5:4b` vs. WattWise Agent.
 
 ---
 
@@ -54,6 +54,20 @@ npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## 📊 Running Evaluations (Local or Google Colab)
+
+### Local Evaluation
+```bash
+python eval/run_eval.py
+```
+
+### Accelerated GPU Evaluation on Google Colab
+1. Upload or open [`eval_colab.ipynb`](file:///c:/Users/sawna/OneDrive/Documents/Development/My_Projects/wattwise-harness/eval_colab.ipynb) in [Google Colab](https://colab.research.google.com/).
+2. Select **Runtime > Change runtime type > T4 GPU**.
+3. Run all cells to benchmark Base `qwen3.5:4b` vs. WattWise ReAct Harness and export the benchmark markdown report.
 
 ---
 
