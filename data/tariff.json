@@ -2,21 +2,21 @@
   "Maharashtra": {
     "discom": "MSEDCL (Maharashtra)",
     "category": "domestic",
-    "fixed_charge_per_month": 128.0,
+    "fixed_charge_per_month": 130.0,
     "slabs": [
-      {"upto": 100, "rate": 5.58},
-      {"upto": 300, "rate": 11.46},
-      {"upto": 500, "rate": 15.72},
-      {"upto": null, "rate": 17.81}
+      {"upto": 100, "rate": 5.56},
+      {"upto": 300, "rate": 12.40},
+      {"upto": 500, "rate": 16.64},
+      {"upto": null, "rate": 19.13}
     ],
     "duty_percent": 0.16,
-    "effective_date": "2024-04-01",
-    "source_link": "https://www.mahadiscom.in/consumer/wp-content/uploads/2024/03/MERC_Tariff_Order_2024_25.pdf"
+    "effective_date": "2026-04-01",
+    "source_link": "https://www.mahadiscom.in/consumer/wp-content/uploads/2025/06/Order_Case-No.75-of-2025.pdf"
   },
   "Gujarat": {
-    "discom": "PGVCL (Gujarat)",
+    "discom": "PGVCL (Gujarat, RGP Urban)",
     "category": "domestic",
-    "fixed_charge_per_month": 40.0,
+    "fixed_charge_per_month": null,
     "slabs": [
       {"upto": 50, "rate": 3.05},
       {"upto": 100, "rate": 3.50},
@@ -24,13 +24,13 @@
       {"upto": null, "rate": 5.20}
     ],
     "duty_percent": 0.15,
-    "effective_date": "2024-04-01",
-    "source_link": "https://www.pgvcl.com/consumer/tariff-schedule/Tariff-Schedule-2024-25.pdf"
+    "effective_date": "2026-04-01",
+    "source_link": "https://gercin.org/wp-content/uploads/2026/03/PGVCL-2583-2025-Tariff-Order-for-FY-2026-27-dtd.-25.03.2026.pdf"
   },
   "Rajasthan": {
     "discom": "JVVNL (Rajasthan)",
     "category": "domestic",
-    "fixed_charge_per_month": 275.0,
+    "fixed_charge_per_month": null,
     "slabs": [
       {"upto": 50, "rate": 4.75},
       {"upto": 150, "rate": 6.50},
@@ -38,8 +38,34 @@
       {"upto": 500, "rate": 7.65},
       {"upto": null, "rate": 7.95}
     ],
+    "duty_percent": null,
+    "effective_date": "2026-04-01",
+    "source_link": "https://rerc.rajasthan.gov.in/rerc-user-files/tariff-orders"
+  },
+  "Delhi": {
+    "discom": "BSES / TPDDL (Delhi)",
+    "category": "domestic",
+    "fixed_charge_per_month": null,
+    "slabs": [
+      {"upto": 200, "rate": 3.00},
+      {"upto": 400, "rate": 4.50},
+      {"upto": 800, "rate": 6.50},
+      {"upto": 1200, "rate": 7.00},
+      {"upto": null, "rate": 8.00}
+    ],
     "duty_percent": 0.05,
-    "effective_date": "2024-04-01",
-    "source_link": "https://energy.rajasthan.gov.in/content/dam/raj/energy/jvvnl/pdf/Tariff/Tariff-for-Supply-of-Electricity-2024.pdf"
+    "effective_date": "2021-10-01",
+    "source_link": "https://www.derc.gov.in/sites/default/files/Press%20Release%202022%20Eng%2030.09.2021.pdf"
+  },
+  "Karnataka": {
+    "discom": "BESCOM (Karnataka)",
+    "category": "domestic",
+    "fixed_charge_per_month": null,
+    "slabs": [
+      {"upto": null, "rate": 5.80}
+    ],
+    "duty_percent": 0.09,
+    "effective_date": "2026-04-01",
+    "source_link": "https://bescom.karnataka.gov.in/storage/pdf-files/Customer%20Relations/TariffOrder-2025Annexure-9.pdf"
   }
 }
