@@ -1,0 +1,44 @@
+[
+  {
+    "id": "bill_1",
+    "filename": "bill_1.jpg",
+    "state": "Rajasthan",
+    "expected_discom_keywords": ["JVVNL", "Jaipur", "Rajasthan", "Vidyut"],
+    "prompt": "Identify the Indian state, electricity company (DISCOM), total units billed, and total amount due from this electricity bill photo."
+  },
+  {
+    "id": "bill_2",
+    "filename": "bill_2.webp",
+    "state": "Maharashtra",
+    "expected_discom_keywords": ["MSEDCL", "Mahavitaran", "Maharashtra"],
+    "prompt": "Identify the Indian state, electricity company (DISCOM), total units billed, and total amount due from this electricity bill photo."
+  },
+  {
+    "id": "bill_3",
+    "filename": "bill_3.jpg",
+    "state": "Maharashtra",
+    "expected_discom_keywords": ["MSEDCL", "Mahavitaran", "Maharashtra"],
+    "prompt": "Identify the Indian state, electricity company (DISCOM), total units billed, and total amount due from this electricity bill photo."
+  },
+  {
+    "id": "bill_4",
+    "filename": "bill_4.png",
+    "state": "Gujarat",
+    "expected_discom_keywords": ["PGVCL", "DGVCL", "UGVCL", "MGVCL", "Gujarat", "Paschim"],
+    "prompt": "Identify the Indian state, electricity company (DISCOM), total units billed, and total amount due from this electricity bill photo."
+  },
+  {
+    "id": "bill_5",
+    "filename": "bill_5.webp",
+    "state": "Delhi",
+    "expected_discom_keywords": ["BSES", "TPDDL", "Tata Power", "Delhi", "Rajdhani", "Yamuna"],
+    "prompt": "Identify the Indian state, electricity company (DISCOM), total units billed, and total amount due from this electricity bill photo."
+  },
+  {
+    "id": "bill_6",
+    "filename": "bill_6.webp",
+    "state": "Karnataka",
+    "expected_discom_keywords": ["BESCOM", "MESCOM", "HESCOM", "GESCOM", "Karnataka", "Bangalore"],
+    "prompt": "Identify the Indian state, electricity company (DISCOM), total units billed, and total amount due from this electricity bill photo."
+  }
+]

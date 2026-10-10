@@ -32,7 +32,7 @@ from wattwise.schemas import BillData  # noqa: E402
 
 load_dotenv(os.path.join(ROOT, ".env"))
 OLLAMA_URL = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-VISION_MODEL = os.getenv("VISION_MODEL")
+VISION_MODEL = os.getenv("VISION_MODEL") or os.getenv("MAIN_MODEL", "qwen3.5:4b")
 TIMEOUT = 400
 # Image tokens grow with pixels; a 12 MP phone photo would take minutes and overflow
 # the context. 1.6 MP keeps a full A4 bill readable.
@@ -167,7 +167,8 @@ def lookup_state(city: str | None, discom: str | None, address: str | None = Non
         .replace("<city>", str(city or "unknown"))
         .replace("<address>", str(address or "unknown"))
     )
-    state = call_ollama(VISION_MODEL, prompt).get("state")
+    model = VISION_MODEL or os.getenv("VISION_MODEL") or os.getenv("MAIN_MODEL", "qwen3.5:4b")
+    state = call_ollama(model, prompt).get("state")
     return state if isinstance(state, str) and state.strip() else None
 
 
@@ -304,6 +305,7 @@ def extract_bill_data(image_path: str) -> str:
     total_amount_due, due_date, load_kw, sources (bill label each value came from),
     warnings (read these first), and error if required fields could not be read.
     """
+    model = VISION_MODEL or os.getenv("VISION_MODEL") or os.getenv("MAIN_MODEL", "qwen3.5:4b")
     if not VISION_MODEL:
         return json.dumps({"error": "VISION_MODEL is not set in .env."})
     if not os.path.isfile(image_path):
@@ -314,10 +316,10 @@ def extract_bill_data(image_path: str) -> str:
         return json.dumps({"error": f"Failed to read image: {exc}"})
 
     try:
-        raw = call_ollama(VISION_MODEL, PROMPT, [image_to_base64(image)])
+        raw = call_ollama(model, PROMPT, [image_to_base64(image)])
         state_warnings = resolve_state(raw)
     except Exception as exc:
-        return json.dumps({"error": f"Failed to call vision model {VISION_MODEL}: {exc}"})
+        return json.dumps({"error": f"Failed to call vision model {model}: {exc}"})
 
     result = check(raw)
     result["warnings"] = state_warnings + result["warnings"]
