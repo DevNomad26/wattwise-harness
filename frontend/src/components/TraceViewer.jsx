@@ -17,34 +17,26 @@ export function TraceViewer({ trace }) {
         <div className="trace-toggle-left">
           <Terminal size={14} style={{ color: 'var(--emerald-primary)' }} />
           <span>Agent Reasoning & MCP Tool Execution</span>
-          <span
-            style={{
-              fontSize: '0.7rem',
-              padding: '0.1rem 0.4rem',
-              borderRadius: '999px',
-              background: 'var(--bg-surface-elevated)',
-              color: 'var(--text-secondary)',
-            }}
-          >
+          <span className="trace-badge">
             {trace.length} {trace.length === 1 ? 'step' : 'steps'}
           </span>
         </div>
-        {expanded ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
+        {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
       </button>
 
       {expanded && (
         <div className="trace-content">
           {trace.map((step, idx) => (
             <div key={idx} className="trace-step">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <div className="trace-header" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <Cpu size={12} color="var(--emerald-primary)" />
                 <span className="trace-tool-title">
-                  {step.tool || 'Action'}({Object.keys(step.args || {}).join(', ')})
+                  {step.tool ? `${step.tool}(${Object.keys(step.args || {}).join(', ')})` : 'Agent Reasoning'}
                 </span>
               </div>
 
               {step.thought && (
-                <div style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                <div className="trace-thought" style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
                   💭 {step.thought}
                 </div>
               )}
@@ -56,8 +48,11 @@ export function TraceViewer({ trace }) {
               )}
 
               {step.result && (
-                <div className="trace-detail-box" style={{ borderColor: 'var(--border-subtle)' }}>
-                  <strong>Output:</strong> {step.result}
+                <div className="trace-detail-box">
+                  <strong>Output:</strong>{' '}
+                  {typeof step.result === 'object' && step.result !== null
+                    ? JSON.stringify(step.result, null, 2)
+                    : step.result}
                 </div>
               )}
             </div>

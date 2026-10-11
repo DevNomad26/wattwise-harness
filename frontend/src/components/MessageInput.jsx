@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ImagePlus, Loader2, X, FileImage } from 'lucide-react';
+import { Send, ImagePlus, Square, X, FileImage } from 'lucide-react';
 
 export function MessageInput({
   onSendMessage,
+  onStop,
   isProcessing,
   selectedFile,
   onFileSelect,
@@ -101,15 +102,27 @@ export function MessageInput({
           disabled={isProcessing}
         />
 
-        <button
-          type="submit"
-          className="send-btn"
-          disabled={(!input.trim() && !selectedFile) || isProcessing}
-          title="Send message (Enter)"
-          aria-label="Send message"
-        >
-          {isProcessing ? <Loader2 size={16} className="animate-spin" /> : <Send size={15} />}
-        </button>
+        {isProcessing ? (
+          <button
+            type="button"
+            className="send-btn stop-btn"
+            onClick={onStop}
+            title="Stop generation"
+            aria-label="Stop generation"
+          >
+            <Square size={13} fill="currentColor" />
+          </button>
+        ) : (
+          <button
+            type="submit"
+            className="send-btn"
+            disabled={!input.trim() && !selectedFile}
+            title="Send message (Enter)"
+            aria-label="Send message"
+          >
+            <Send size={15} />
+          </button>
+        )}
       </form>
     </footer>
   );

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Bot, User, Copy, Check, Clock, AlertTriangle } from 'lucide-react';
+import { TraceViewer } from './TraceViewer';
+import { TariffBreakdownCard } from './TariffBreakdownCard';
 
 export function MessageItem({ message, onImageZoom }) {
   const [copied, setCopied] = useState(false);
@@ -20,6 +22,9 @@ export function MessageItem({ message, onImageZoom }) {
       </div>
 
       <div className="message-content">
+        {/* Visual Tariff Audit Card (if bill calculations present) */}
+        {!isUser && <TariffBreakdownCard message={message} />}
+
         <div className={`message-bubble ${isUser ? 'user' : 'assistant'}`}>
           {/* Attached image thumbnail */}
           {message.imagePreview && (
@@ -59,6 +64,11 @@ export function MessageItem({ message, onImageZoom }) {
             </div>
           )}
         </div>
+
+        {/* Embedded Trace / Reasoning Viewer for Assistant Messages */}
+        {!isUser && message.trace && message.trace.length > 0 && (
+          <TraceViewer trace={message.trace} />
+        )}
 
         {/* Minimal Footer: Execution time & Copy Action */}
         {!isUser && (

@@ -2,6 +2,7 @@ import json
 import uuid
 import sys
 import os
+import inspect
 from contextlib import AsyncExitStack
 from typing import List, Dict, Any
 
@@ -28,12 +29,22 @@ class AgentLoop:
         ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
         self.model = OllamaClient(model_name=model_name, host=ollama_host)
         
-    async def run(self, user_prompt: str, mcp_scripts: List[str], history: List[Dict[str, str]] | None = None) -> str:
+    async def run(self, user_prompt: str, mcp_scripts: List[str], history: List[Dict[str, str]] | None = None, on_event = None) -> str:
         """Run one question. `history` holds earlier non-system messages so follow-up
         questions can reuse earlier tool results; after the run, self.messages holds the
         full transcript."""
+        async def emit(event_type: str, data: dict):
+            if on_event:
+                try:
+                    res = on_event(event_type, data)
+                    if inspect.isawaitable(res):
+                        await res
+                except Exception:
+                    pass
+
         run_id = str(uuid.uuid4())
         print(f"\nStarting run {run_id}")
+        await emit("start", {"prompt": user_prompt})
 
         messages = [
             {
@@ -97,6 +108,7 @@ class AgentLoop:
             # 2. Main agent loop (max 8 steps)
             for step_idx in range(1, 9):
                 print(f"Step {step_idx}/8")
+                await emit("step_start", {"step": step_idx, "max_steps": 8})
                 
                 # Get model response
                 response = await self.model.generate(messages)
@@ -122,9 +134,11 @@ class AgentLoop:
                 
                 if step.thought:
                     print(f"Thought: {step.thought}")
+                    await emit("thought", {"step": step_idx, "thought": step.thought})
                 
                 if step.action == "final":
                     print("Final answer reached.")
+                    await emit("final_answer", {"step": step_idx, "answer": step.final_answer})
                     return step.final_answer
                     
                 elif step.action == "tool":
@@ -137,6 +151,13 @@ class AgentLoop:
                     if skill:
                         step.tool_name, step.tool_args = "load_skill", {"name": skill}
 
+                    await emit("tool_call", {
+                        "step": step_idx,
+                        "tool": step.tool_name,
+                        "args": step.tool_args or {},
+                        "thought": step.thought,
+                    })
+
                     # Internal Tool: load_skill
                     if step.tool_name == "load_skill":
                         skill_name = step.tool_args.get("name") if step.tool_args else None
@@ -146,6 +167,11 @@ class AgentLoop:
                             continue
                         skill_content = load_skill(skill_name)
                         messages.append({"role": "user", "content": f"Loaded Skill '{skill_name}':\n{skill_content}"})
+                        await emit("tool_result", {
+                            "step": step_idx,
+                            "tool": "load_skill",
+                            "result": f"Loaded skill '{skill_name}'"
+                        })
                         continue
 
                     # External MCP Tools
@@ -168,9 +194,19 @@ class AgentLoop:
                             "role": "user", 
                             "content": f"Tool '{step.tool_name}' returned:\n{result_text}"
                         })
+                        await emit("tool_result", {
+                            "step": step_idx,
+                            "tool": step.tool_name,
+                            "result": result_text[:500]
+                        })
                     except Exception as e:
                         print(f"Tool execution failed: {e}")
                         messages.append({"role": "user", "content": f"Tool execution failed: {e}"})
+                        await emit("tool_result", {
+                            "step": step_idx,
+                            "tool": step.tool_name,
+                            "result": f"Failed: {e}"
+                        })
                 
                 else:
                     messages.append({"role": "user", "content": "Invalid action. Must be 'tool' or 'final'."})

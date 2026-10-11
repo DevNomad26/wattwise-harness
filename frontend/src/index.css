@@ -593,6 +593,112 @@ button, input, textarea {
   padding: 0;
 }
 
+/* Agent Trace / Reasoning Drawer */
+.trace-container {
+  margin-top: 0.35rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  overflow: hidden;
+  font-size: 0.825rem;
+  transition: border-color var(--transition-fast);
+}
+
+.trace-container:hover {
+  border-color: var(--border-default);
+}
+
+.trace-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.8rem;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.trace-toggle:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.trace-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.trace-badge {
+  font-size: 0.68rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-elevated);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.trace-content {
+  padding: 0.65rem 0.8rem;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.trace-step {
+  border-left: 2px solid var(--emerald-primary);
+  padding-left: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.trace-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.trace-tool-title {
+  font-family: var(--font-mono);
+  color: var(--emerald-primary);
+  font-weight: 600;
+  font-size: 0.785rem;
+}
+
+.trace-thought {
+  font-size: 0.775rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.trace-detail-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.725rem;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 220px;
+  overflow-y: auto;
+  line-height: 1.4;
+}
+
+.trace-detail-box strong {
+  color: var(--text-primary);
+}
+
 .message-footer {
   display: flex;
   align-items: center;
@@ -757,6 +863,85 @@ button, input, textarea {
   opacity: 0.85;
 }
 
+/* Stop Generation Button */
+.send-btn.stop-btn {
+  background: var(--rose-primary);
+  color: #ffffff;
+  animation: pulseStop 1.8s infinite ease-in-out;
+}
+
+.send-btn.stop-btn:hover {
+  background: #e11d48;
+  opacity: 1;
+}
+
+@keyframes pulseStop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* Live Progressive Agent Execution Card */
+.live-progress-bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  border-left: 3px solid var(--emerald-primary) !important;
+  background: var(--bg-surface) !important;
+  min-width: 280px;
+}
+
+.live-progress-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.live-progress-action {
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.live-progress-step-badge {
+  font-size: 0.68rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-default);
+  color: var(--emerald-primary);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.live-progress-thought {
+  font-size: 0.775rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.4;
+  padding-left: 0.25rem;
+  border-left: 2px solid var(--border-default);
+}
+
+.live-progress-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.725rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  align-self: flex-start;
+}
+
+.live-progress-tool code {
+  color: var(--emerald-primary);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
 /* Loading Indicator */
 .loading-typing {
   display: flex;
@@ -825,4 +1010,237 @@ button, input, textarea {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+/* ==========================================================================
+   Visual Tariff Audit Breakdown Card
+   ========================================================================== */
+.tariff-card {
+  margin-bottom: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.tariff-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tariff-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.tariff-icon-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--emerald-surface);
+  color: var(--emerald-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--emerald-border);
+}
+
+.tariff-card-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.tariff-card-subtitle {
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  margin: 0.15rem 0 0 0;
+}
+
+.tariff-pills-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tariff-pill {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  font-family: var(--font-mono);
+}
+
+.state-pill {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.units-pill {
+  background: var(--emerald-surface);
+  border: 1px solid var(--emerald-border);
+  color: var(--emerald-primary);
+}
+
+/* Slab Visualizer Segment Bar */
+.slab-visualizer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+}
+
+.slab-visualizer-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.725rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.slab-bar-track {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-elevated);
+  display: flex;
+  overflow: hidden;
+}
+
+.slab-bar-segment {
+  height: 100%;
+  transition: width 0.4s ease-out;
+}
+
+.slab-legend-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.slab-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.slab-legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.slab-legend-name {
+  color: var(--text-muted);
+}
+
+.slab-legend-calc strong {
+  color: var(--text-primary);
+}
+
+/* 4 Financial Metrics Grid */
+.tariff-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .tariff-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tariff-metric-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.tariff-metric-box.total-box {
+  background: var(--bg-surface-elevated);
+  border-color: var(--border-default);
+}
+
+.metric-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.metric-value.highlight {
+  color: var(--emerald-primary);
+}
+
+/* Discrepancy & Verification Verdict Banner */
+.tariff-verdict-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-md);
+  font-size: 0.775rem;
+  line-height: 1.45;
+}
+
+.tariff-verdict-banner strong {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 0.15rem;
+}
+
+.tariff-verdict-banner p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.tariff-verdict-banner.verified {
+  background: var(--emerald-surface);
+  border: 1px solid var(--emerald-border);
+  color: var(--emerald-primary);
+}
+
+.tariff-verdict-banner.overcharged {
+  background: var(--rose-surface);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: var(--rose-primary);
+}
+
+.tariff-verdict-banner.undercharged {
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  color: #0ea5e9;
 }

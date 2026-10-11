@@ -24,6 +24,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from PIL import Image
 
 from api.session import ROOT, Session
@@ -100,6 +101,68 @@ async def chat(
     async with model_lock:
         result = await session.ask(message, path)
     return {"session_id": session_id, **result}
+
+
+@app.post("/api/chat/stream")
+async def chat_stream(
+    message: str = Form(...),
+    session_id: str | None = Form(None),
+    image: UploadFile | None = File(None),
+):
+    message = message.strip()
+    if not message:
+        raise HTTPException(400, "Message is empty.")
+    if session_id and session_id not in sessions:
+        raise HTTPException(404, "Unknown session_id. Start a new conversation without one.")
+    session_id = session_id or uuid.uuid4().hex
+    session = sessions.setdefault(session_id, new_session())
+    path = await save_upload(image, session_id) if image is not None and image.filename else None
+
+    async def event_generator():
+        queue: asyncio.Queue = asyncio.Queue()
+
+        async def on_event(event_type: str, data: dict):
+            await queue.put({"type": event_type, "data": data})
+
+        async def worker():
+            try:
+                async with model_lock:
+                    result = await session.ask(message, path, on_event=on_event)
+                await queue.put({
+                    "type": "done",
+                    "data": {
+                        "session_id": session_id,
+                        **result,
+                    }
+                })
+            except Exception as e:
+                await queue.put({
+                    "type": "error",
+                    "data": {"error": str(e)}
+                })
+            finally:
+                await queue.put(None)
+
+        task = asyncio.create_task(worker())
+        try:
+            while True:
+                item = await queue.get()
+                if item is None:
+                    break
+                yield f"data: {json.dumps(item)}\n\n"
+        finally:
+            if not task.done():
+                task.cancel()
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @app.delete("/api/sessions/{session_id}")
