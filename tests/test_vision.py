@@ -244,6 +244,7 @@ def test_extract_bill_data_end_to_end(tmp_path, monkeypatch):
     assert result["units"] == 11223059.0
     assert "error" not in result
     assert result["warnings"][0].startswith("Photo reading said state Maharashtra")
+    assert list(result)[0] == "next_step"
 
 
 def test_extract_bill_data_reports_ollama_failure(tmp_path, monkeypatch):
@@ -255,3 +256,25 @@ def test_extract_bill_data_reports_ollama_failure(tmp_path, monkeypatch):
 
     monkeypatch.setattr(vision, "call_ollama", fail)
     assert "connection refused" in json.loads(vision.extract_bill_data(str(path)))["error"]
+
+
+def test_next_step_stops_on_serious_warning():
+    step = vision.next_step({"warnings": ["UNUSUAL AMOUNT: Rs 800589850.0 ...", "NON-DOMESTIC: ..."],
+                             "error": "Could not read these fields from the bill: units.", "units": None})
+    assert step.startswith("The bill is very likely wrong (UNUSUAL AMOUNT warning)")
+    assert "Do not call compute_bill or calculate" in step
+
+
+def test_next_step_non_domestic():
+    step = vision.next_step({"warnings": ["NON-DOMESTIC: this is a industrial connection."], "units": 150.0, "state": "Gujarat"})
+    assert "not a domestic connection" in step and "Do not call compute_bill" in step
+
+
+def test_next_step_unreadable_fields():
+    step = vision.next_step({"warnings": [], "error": "Could not read these fields from the bill: state."})
+    assert "could not be read" in step and "Do not call compute_bill" in step
+
+
+def test_next_step_normal_bill_calls_compute_bill():
+    step = vision.next_step({"warnings": ["Billing period not found; assumed 1 month."], "units": 150.0, "state": "Gujarat"})
+    assert step.startswith('To check whether the bill is correct, call compute_bill with {"units": 150.0, "state": "Gujarat"}')

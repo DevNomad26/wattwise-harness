@@ -4,6 +4,8 @@ description: Check whether an electricity bill is correct. Use when the user giv
 ---
 # Bill checker
 
+This skill is now loaded. It is instructions, not a tool: never call `bill-checker` or `load_skill` for it again. Follow the steps below.
+
 Follow these steps in order, starting with step 1. Call one tool per step. Values in <angle brackets> are placeholders: fill them only from earlier tool results. Never do arithmetic yourself: every number in your answer must come from a tool result.
 
 1. Read the bill. Call `extract_bill_data` with the photo path the user gave:
