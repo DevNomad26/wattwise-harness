@@ -105,10 +105,10 @@ class AgentLoop:
                 tools_str = json.dumps(tools_list, indent=2)
                 messages[0]["content"] += f"\n\nAvailable tools:\n{tools_str}"
                 
-            # 2. Main agent loop (max 8 steps)
-            for step_idx in range(1, 9):
-                print(f"Step {step_idx}/8")
-                await emit("step_start", {"step": step_idx, "max_steps": 8})
+            # 2. Main agent loop (max 20 steps)
+            for step_idx in range(1, 21):
+                print(f"Step {step_idx}/20")
+                await emit("step_start", {"step": step_idx, "max_steps": 20})
                 
                 # Get model response
                 response = await self.model.generate(messages)
@@ -211,4 +211,4 @@ class AgentLoop:
                 else:
                     messages.append({"role": "user", "content": "Invalid action. Must be 'tool' or 'final'."})
             
-            return "Failed to reach final answer within 8 steps."
+            return "Failed to reach final answer within 20 steps."
