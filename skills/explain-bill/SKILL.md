@@ -1,8 +1,10 @@
 ---
 name: explain-bill
-description: Explain an electricity bill or a change in the bill in simple words. Use when the user asks what the charges mean or why the bill went up.
+description: Explain an electricity bill or a change in the bill in simple words. Use when the user asks what the charges mean or why the bill went up. Not for checking whether a bill is correct (use bill-checker).
 ---
 # Explain a bill
+
+This skill is now loaded. It is instructions, not a tool: never call `explain-bill` or `load_skill` for it again. Follow the steps below.
 
 1. If you do not already have the bill numbers, first follow the `bill-checker` steps 1 to 3.
 2. Call `get_tariff_info` with the state to get the slab rates:

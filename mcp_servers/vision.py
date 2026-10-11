@@ -245,6 +245,33 @@ def check_category(category: str | None) -> list[str]:
     ]
 
 
+def next_step(result: dict) -> str:
+    """What the model should do next to check the bill. Code decides from the warnings, so a small
+    model does not wander off into its own calculations."""
+    warnings = result.get("warnings") or []
+    serious = next((w for w in warnings if w.startswith(("IMPOSSIBLE UNITS", "UNUSUAL AMOUNT"))), None)
+    if serious:
+        return (
+            f"The bill is very likely wrong ({serious.split(':')[0]} warning). If the user asked whether the bill "
+            "is correct, give the final answer now: explain that warning in simple words and offer a complaint "
+            "letter. Do not call compute_bill or calculate."
+        )
+    if any(w.startswith("NON-DOMESTIC") for w in warnings):
+        return (
+            "This bill cannot be checked against the tariff because it is not a domestic connection. Give the "
+            "final answer now with the bill details. Do not call compute_bill or calculate."
+        )
+    if result.get("error"):
+        return (
+            "The bill cannot be checked because some fields could not be read (see error). Give the final answer "
+            "now and tell the user which fields could not be read. Do not call compute_bill or calculate."
+        )
+    return (
+        f'To check whether the bill is correct, call compute_bill with {{"units": {result["units"]}, '
+        f'"state": "{result["state"]}"}}, then compare its total with total_amount_due using calculate.'
+    )
+
+
 def check(raw: dict) -> dict:
     """Validate the model's answer. Flags problems; never replaces a value with its own guess."""
     values, sources = split_fields(raw)
@@ -301,9 +328,9 @@ def check(raw: dict) -> dict:
 def extract_bill_data(image_path: str) -> str:
     """Reads a photo of an electricity bill and returns its data as JSON.
 
-    Keys: discom, city, address, state, category, months, previous_reading, current_reading, units,
-    total_amount_due, due_date, load_kw, sources (bill label each value came from),
-    warnings (read these first), and error if required fields could not be read.
+    Keys: next_step (what to do next; follow it), discom, city, address, state, category, months,
+    previous_reading, current_reading, units, total_amount_due, due_date, load_kw, sources (bill
+    label each value came from), warnings, and error if required fields could not be read.
     """
     model = VISION_MODEL or os.getenv("VISION_MODEL") or os.getenv("MAIN_MODEL", "qwen3.5:4b")
     if not VISION_MODEL:
@@ -323,7 +350,7 @@ def extract_bill_data(image_path: str) -> str:
 
     result = check(raw)
     result["warnings"] = state_warnings + result["warnings"]
-    return json.dumps(result)
+    return json.dumps({"next_step": next_step(result), **result})
 
 
 if __name__ == "__main__":
