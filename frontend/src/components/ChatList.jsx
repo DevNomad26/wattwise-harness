@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { Zap } from 'lucide-react';
+import { Zap, Cpu } from 'lucide-react';
 import { MessageItem } from './MessageItem';
 
-export function ChatList({ messages, isProcessing, onImageZoom }) {
+export function ChatList({ messages, isProcessing, liveProgress, onImageZoom }) {
   const scrollEndRef = useRef(null);
 
   useEffect(() => {
     scrollEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isProcessing]);
+  }, [messages, isProcessing, liveProgress]);
 
   if (messages.length === 0) {
     return (
@@ -39,15 +39,30 @@ export function ChatList({ messages, isProcessing, onImageZoom }) {
             <Zap size={14} />
           </div>
           <div className="message-content">
-            <div className="message-bubble assistant">
-              <div className="loading-typing">
-                <div className="typing-dot" />
-                <div className="typing-dot" />
-                <div className="typing-dot" />
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '0.35rem' }}>
-                  Auditing bill & verifying tariff...
+            <div className="message-bubble assistant live-progress-bubble">
+              <div className="live-progress-header">
+                <div className="loading-typing">
+                  <div className="typing-dot" />
+                  <div className="typing-dot" />
+                  <div className="typing-dot" />
+                </div>
+                <span className="live-progress-action">
+                  {liveProgress?.action || 'Auditing bill & verifying tariff...'}
                 </span>
               </div>
+
+              {liveProgress?.thought && (
+                <div className="live-progress-thought">
+                  💭 {liveProgress.thought}
+                </div>
+              )}
+
+              {liveProgress?.tool && (
+                <div className="live-progress-tool">
+                  <Cpu size={12} color="var(--emerald-primary)" />
+                  <span>Invoking: <code>{liveProgress.tool}</code></span>
+                </div>
+              )}
             </div>
           </div>
         </div>

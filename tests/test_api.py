@@ -11,8 +11,13 @@ class FakeSession:
     def __init__(self):
         self.calls = []
 
-    async def ask(self, question, image=None):
+    async def ask(self, question, image=None, on_event=None):
         self.calls.append((question, image))
+        if on_event:
+            import inspect
+            res = on_event("step_start", {"step": 1})
+            if inspect.isawaitable(res):
+                await res
         return {"answer": f"answer to {question}", "trace": [], "seconds": 0.1, "error": False}
 
 
@@ -89,3 +94,13 @@ def test_health_reports_missing_ollama(client, monkeypatch):
 def test_health_ok_when_model_present(client, monkeypatch):
     monkeypatch.setattr(server, "ollama_models", lambda: [server.MODEL])
     assert client.get("/api/health").json()["ok"] is True
+
+
+def test_chat_stream_yields_events(client):
+    r = client.post("/api/chat/stream", data={"message": "Test question"})
+    assert r.status_code == 200
+    assert "text/event-stream" in r.headers["content-type"]
+    text = r.text
+    assert "data: " in text
+    assert '"type": "done"' in text
+

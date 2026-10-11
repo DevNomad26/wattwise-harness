@@ -60,14 +60,15 @@ class Session:
     def history(self) -> list[dict]:
         return [message for turn in self.turns[-MAX_TURNS:] for message in turn]
 
-    async def ask(self, question: str, image: Path | None = None) -> dict:
+    async def ask(self, question: str, image: Path | None = None, on_event = None) -> dict:
         """Ask one question. Returns {"answer", "trace", "seconds", "error"}."""
         start = time.time()
         if image is not None and image == self.image:
             image = None  # same bill as before: reuse the earlier reading instead of re-reading the photo
         history = self.history
+        kwargs = {"on_event": on_event} if on_event is not None else {}
         try:
-            answer = await self.agent.run(build_prompt(question, image), MCP_SCRIPTS, history=history)
+            answer = await self.agent.run(build_prompt(question, image), MCP_SCRIPTS, history=history, **kwargs)
         except Exception as exc:
             cause = root_cause(exc)
             return {

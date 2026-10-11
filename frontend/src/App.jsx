@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { ChatList } from './components/ChatList';
 import { QuickChips } from './components/QuickChips';
 import { MessageInput } from './components/MessageInput';
 import { ImageModal } from './components/ImageModal';
-import { checkHealth, sendChatMessage, deleteSession } from './services/api';
+import { checkHealth, sendChatMessageStream, deleteSession } from './services/api';
 
 const STORAGE_THREADS_KEY = 'wattwise_chat_threads';
 const STORAGE_ACTIVE_KEY = 'wattwise_active_thread_id';
@@ -52,6 +52,18 @@ export default function App() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [zoomedImage, setZoomedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [liveProgress, setLiveProgress] = useState(null);
+  const abortControllerRef = useRef(null);
+
+  // Stop Generation Handler
+  const handleStopGeneration = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsProcessing(false);
+    setLiveProgress(null);
+  };
 
   // Sync threads to localStorage
   useEffect(() => {
@@ -70,7 +82,6 @@ export default function App() {
   // Current active thread object
   const activeThread = threads.find((t) => t.id === activeThreadId) || null;
   const currentMessages = activeThread ? activeThread.messages : [];
-  const currentSessionId = activeThread ? activeThread.sessionId : null;
 
   // Apply Theme
   useEffect(() => {
@@ -213,18 +224,77 @@ export default function App() {
     );
 
     setIsProcessing(true);
+    setLiveProgress({ step: 1, action: 'Initializing agent loop & tools...', tool: null });
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const handleStreamEvent = (evt) => {
+      if (!evt || !evt.type) return;
+      if (evt.type === 'step_start') {
+        setLiveProgress((prev) => ({
+          ...prev,
+          step: evt.data.step,
+          maxSteps: evt.data.max_steps,
+          action: 'Reasoning next action...',
+          tool: null,
+        }));
+      } else if (evt.type === 'thought') {
+        setLiveProgress((prev) => ({
+          ...prev,
+          step: evt.data.step,
+          thought: evt.data.thought,
+        }));
+      } else if (evt.type === 'tool_call') {
+        const toolName = evt.data.tool || 'MCP Tool';
+        let actionLabel = `Running ${toolName}...`;
+        if (toolName === 'extract_bill_data' || toolName === 'vision') {
+          actionLabel = 'Extracting meter readings & data from bill...';
+        } else if (toolName === 'get_tariff_info' || toolName === 'tariff') {
+          actionLabel = `Checking official tariff slabs for ${evt.data.args?.state || 'state'}...`;
+        } else if (toolName === 'compute_bill') {
+          actionLabel = `Calculating bill for ${evt.data.args?.units ?? ''} units (${evt.data.args?.state || ''})...`;
+        } else if (toolName === 'calculate') {
+          actionLabel = 'Running arithmetic verification...';
+        } else if (toolName === 'load_skill') {
+          actionLabel = `Loading specialized skill: ${evt.data.args?.name || ''}...`;
+        }
+        setLiveProgress((prev) => ({
+          ...prev,
+          step: evt.data.step,
+          action: actionLabel,
+          tool: toolName,
+          thought: evt.data.thought || prev?.thought,
+        }));
+      } else if (evt.type === 'tool_result') {
+        setLiveProgress((prev) => ({
+          ...prev,
+          step: evt.data.step,
+          action: `Completed ${evt.data.tool}, reasoning next action...`,
+        }));
+      } else if (evt.type === 'final_answer') {
+        setLiveProgress((prev) => ({
+          ...prev,
+          action: 'Formulating final verified response...',
+          tool: null,
+        }));
+      }
+    };
 
     try {
-      const response = await sendChatMessage({
+      const response = await sendChatMessageStream({
         message: promptText,
         sessionId: targetThread.sessionId,
         imageFile: currentFile,
+        signal: controller.signal,
+        onEvent: handleStreamEvent,
       });
 
       const assistantMessage = {
         id: `assistant-${Date.now()}`,
         role: 'assistant',
         content: response.answer,
+        trace: response.trace || [],
         seconds: response.seconds,
         error: response.error,
         timestamp: new Date().toISOString(),
@@ -248,6 +318,29 @@ export default function App() {
       // Clear staged file after successful upload so follow-ups don't re-upload
       handleFileRemove();
     } catch (err) {
+      if (err.name === 'AbortError' || err.message?.toLowerCase().includes('abort')) {
+        const stoppedMsg = {
+          id: `assistant-${Date.now()}`,
+          role: 'assistant',
+          content: '_Audit generation stopped by user._',
+          seconds: 0,
+          timestamp: new Date().toISOString(),
+        };
+
+        setThreads((prev) =>
+          prev.map((t) =>
+            t.id === targetThreadId
+              ? {
+                  ...t,
+                  messages: [...updatedMessagesWithUser, stoppedMsg],
+                  updatedAt: new Date().toISOString(),
+                }
+              : t
+          )
+        );
+        return;
+      }
+
       console.error('Chat error:', err);
       const errorMsg = {
         id: `error-${Date.now()}`,
@@ -270,6 +363,8 @@ export default function App() {
       );
     } finally {
       setIsProcessing(false);
+      setLiveProgress(null);
+      abortControllerRef.current = null;
     }
   };
 
@@ -302,6 +397,7 @@ export default function App() {
           <ChatList
             messages={currentMessages}
             isProcessing={isProcessing}
+            liveProgress={liveProgress}
             onImageZoom={(url) => setZoomedImage(url)}
           />
 
@@ -314,6 +410,7 @@ export default function App() {
           {/* Input Bar */}
           <MessageInput
             onSendMessage={handleSendMessage}
+            onStop={handleStopGeneration}
             isProcessing={isProcessing}
             selectedFile={selectedFile}
             onFileSelect={handleFileSelect}
